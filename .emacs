@@ -145,10 +145,10 @@
         '(("ide"
            ("dired" (mode . dired-mode))
            ("Drupal" (filename . "drupal"))
-           ("php" (name . "\\.php$\\|\\.inc$"))
-           ("html" (name . "\\.html\\|\\.tpl"))
-           ("css" (name . "\\.css"))
-           ("js" (name . "\\.js\\(on\\)?"))
+           ("php" (filename . "\\.php$\\|\\.inc$"))
+           ("html" (filename . "\\.\\(p\\)?html$\\|\\.tpl$"))
+           ("css" (filename . "\\.css"))
+           ("js" (filename . "\\.js\\(on\\)?"))
            ("iOS" (filename . "iOS"))
            ("emacs" (name . "^\\*.\*\\*$"))
            ("Org" (name . "\\.org$")))))
@@ -196,6 +196,25 @@
 ;;;;;;;;;;;;;;
 ;; My stuff ;;
 ;;;;;;;;;;;;;;
+
+(defun jqt/convert-db-obj-to-sql (start end)
+  "Convert php query objects into a sql string.  E.g.:
+
+$assoc_module = $this->EE->db
+                ->select('ct.url_title, ct.entry_id, ud.title, ud.field_id_'.$this->cad_module_display_title_field_id.' AS navigation_title, ud.field_id_'.$this->cad_module_disable_zip_field_id.' AS disable_module_zip')
+                ->from('channel_titles AS ct')
+                ->join('uhura_data AS ud', 'ct.entry_id = ud.entry_id')
+                ->where('ud.status', 'open')
+                ->where('ud.lang_id', $this->lang_id)
+                ->where('ct.entry_id', $assoc_module_id)
+                ->limit(1)
+                ->get()
+                ->row();
+
+would return
+SELECT ct.url_title, ct.entry_id, ud.title, ud.field_id_%1 AS navigation_title, ud.field_id_%2 AS disable_module_zip...
+"
+  (interactive "r"))
               
 (defun ide ()
   ""
@@ -249,7 +268,7 @@
     ;; Switch to the second window since current should be the *Ibuffer* window.
     ;; (select-window (car (window-list)))
     ;; Since i'm using multiple windows now for other things, i need to specify the window's coords.
-    (select-window (window-at 50 0))
+    (select-window (window-at 60 0))
     (switch-to-buffer buf)))
 
 (defun jqt/window-list ()
@@ -326,6 +345,11 @@
         (insert (format "%s" date-string))
       (message "%s" date-string))))
 
+(defun jqt/reconnect-shell ()
+  ""
+  (interactive)
+  (shell (current-buffer)))
+
 ;;;;;;;;;;;;;;;
 ;; PHP stuff ;;
 ;;;;;;;;;;;;;;;
@@ -335,13 +359,13 @@
 (defun php/previous-function ()
   ""
   (interactive)
-  (search-backward-regexp "function +[[:word:]_]+\s*\(.*\)[\s\n]*{" nil t)
+  (search-backward-regexp "function +[[:word:]_]+\s*\(.*\)[\s\n\t]*{" nil t)
   (recenter))
 
 (defun php/next-function ()
   ""
   (interactive)
-  (search-forward-regexp "function +[[:word:]_]+\s*\(.*\)[\s\n]*{" nil t)
+  (search-forward-regexp "function +[[:word:]_]+\s*\(.*\)[\s\n\t]*{" nil t)
   (recenter))
 
 (defun php/function-signature ()
@@ -352,6 +376,67 @@
     (let ((start (point)))
       (search-forward "{")
       (message "%s" (buffer-substring start (point))))))
+
+;; zend style
+(defcustom zend-style
+  '((c-basic-offset . 4)
+    (fill-column . 80)
+    ;; (show-trailing-whitespace . t)
+    ;; (indent-tabs-mode . nil)
+    (require-final-newline . t)
+    (c-offsets-alist . ((arglist-close . 0)
+                        (arglist-cont-nonempty . c-lineup-math)
+                        (arglist-intro . +)
+                        (case-label . +)
+                        (comment-intro . 0)))
+    (c-doc-comment-style . (php-mode . javadoc))
+    (c-label-minimum-indentation . 1)
+    (c-special-indent-hook . c-gnu-impose-minimum)
+    )
+  "Zend coding style.
+According to http://zend.org/coding-standards#indenting."
+  :group 'zend)
+
+(defun test/zend-mode ()
+  ""
+  (interactive)
+  (c-add-style "zend" zend-style)
+  (when (eq major-mode 'php-mode)
+    (c-set-style "zend")))
+
+;;;;;;;;;;
+;; zend ;;
+;;;;;;;;;;
+
+(defun zend/rename-buffer-to-classname ()
+  ""
+  (interactive)
+  (save-excursion
+    (search-forward "class ")
+    (let ((start (point)))
+      (search-forward (replace-regexp-in-string "\.[[:word:]]+$" "" (buffer-name)))
+      (let* ((end (point))
+             (class (buffer-substring start end)))
+        (rename-buffer class)))))
+
+(defun zend/rename-buffer-to-specify-path-from-project ()
+  ""
+  (interactive)
+  (let* ((path-to-file-from-project (replace-regexp-in-string ".*/zend/" "" (buffer-file-name)))
+         (parent-directory (replace-regexp-in-string (buffer-name) "" path-to-file-from-project)))
+    (rename-buffer (format "%s in %s" (buffer-name) parent-directory))))
+
+;;;;;;;;;;;;;;
+;; Doctrine ;;
+;;;;;;;;;;;;;;
+
+(defun doctrine/add-get (variable &optional description)
+  ""
+  (interactive "sVariable: \nsDescription: ")
+  (newline-and-indent)
+  (insert "/**\n")
+  (indent-new-comment-line))
+;; on hold, might be a better way, insert-new-comment-line doesn't add the * for some reason when called interactively.
 
 ;;;;;;;;;;;;;;;
 ;; iOS stuff ;;
@@ -613,6 +698,12 @@
               (find-file (replace-regexp-in-string "\\.h$" ".m" (buffer-name)))))
         (switch-to-buffer nil))))
 
+(defadvice ido-find-file (after ido-rename-zend-buffer-to-classname activate)
+  ""
+  (when (string-match "/zend/" (buffer-file-name))
+    (cond ((string-match "\.php$" (buffer-name)) (zend/rename-buffer-to-classname))
+          ((string-match "\.\\(p\\)?html" (buffer-name)) (zend/rename-buffer-to-specify-path-from-project)))))
+
 ;;;;;;;;;;;;;
 ;; c stuff ;;
 ;;;;;;;;;;;;;
@@ -641,17 +732,17 @@
 (global-set-key (kbd "C-S-p") (lambda () (interactive) (jqt/scroll-down-a-bit 3)))
 (global-set-key (kbd "C-S-s") (lambda (name) (interactive "sName: ") (shell (concat ";shell " name))))
 (global-set-key (kbd "C-S-t") (lambda (name) (interactive "sName: ") (term "/bin/bash") (rename-buffer (concat ";term " name))))
-(global-set-key (kbd "C-x O") (lambda () (interactive) (other-frame 1)))
+(global-set-key (kbd "C-S-x o") (lambda () (interactive) (other-frame 1)))
 
 ;; Custom all
 (global-set-key (kbd "C-x C-b") 'jqt/buffer-list)
 (global-set-key (kbd "C-c i b") 'c/insert-buffer-name)
 (global-set-key (kbd "C-c u") 'uncomment-region)
 (global-set-key (kbd "M-Y") 'yank-pop-forwards)
-(global-set-key (kbd "C-c m u") 'windmove-up)
-(global-set-key (kbd "C-c m l") 'windmove-left)
-(global-set-key (kbd "C-c m r") 'windmove-right)
-(global-set-key (kbd "C-c m d") 'windmove-down)
+(global-set-key (kbd "C-c m p") 'windmove-up)
+(global-set-key (kbd "C-c m b") 'windmove-left)
+(global-set-key (kbd "C-c m f") 'windmove-right)
+(global-set-key (kbd "C-c m n") 'windmove-down)
 
 ;; Custom PHP
 (defun php/define-keys ()
@@ -685,4 +776,3 @@
   ""
   (interactive)
   (define-key ibuffer-mode-map "o" 'ide/ibuffer-visit-buffer-other-window))
-
