@@ -303,16 +303,6 @@ SELECT ct.url_title, ct.entry_id, ud.title, ud.field_id_%1 AS navigation_title, 
   (previous-line line-count)
   (scroll-down line-count))
 
-(defun jqt/equalize
-  ""
-  (interactive)
-  ;; Find the furthest "=" in the region
-  (search-backward "=" nil t)
-  ;; Get the point
-  ;; For all lines in the region with a "=", add spaces before their "=" until aligned with the furthest one
-  ;; For all other lines, indent
-  )
-
 (defun jqt/count-matches-in-buffer (regexp)
   ""
   (interactive "sRegexp: ")
@@ -337,18 +327,180 @@ SELECT ct.url_title, ct.entry_id, ud.title, ud.field_id_%1 AS navigation_title, 
   (interactive)
   (find-file "/ssh:jtruong@athens.sierrabravo.net:public_html/"))
 
-(defun jqt/convert-from-unix-timestamp (seconds &optional insert-p)
+(defun jqt/digits-at-point ()
   ""
-  (interactive "nSeconds: ")
+  (let (;; Store current point.
+        (start (point))
+        ;; Store point at the end of the table name.
+        (end (1- (search-forward-regexp "[^[:digit:]]" nil t))))
+    ;; Store table name kill ring for later use.
+    (copy-region-as-kill start end)
+    ;; Set name to table name in buffer.
+    (buffer-substring start end)))
+
+(defun jqt/convert-from-unix-timestamp (seconds &optional no-message-p)
+  ""
+  (interactive (list (if current-prefix-arg
+                         (string-to-number (read-from-minibuffer "Seconds: "))
+                       (string-to-number (jqt/digits-at-point)))))
   (let ((date-string (format-time-string "%Y-%m-%d %T" (seconds-to-time seconds))))
-    (if insert-p 
-        (insert (format "%s" date-string))
+    (if no-message-p
+        date-string
       (message "%s" date-string))))
+
+(defun jqt/convert-newlines-to (start end separator)
+  ""
+  (interactive "r\nsSeparator: ")
+  ;; Move to prompt.
+  (search-forward-regexp "^\$ $" nil t)
+  (end-of-line)
+  (insert (format "%s" (jqt/string-friendly-rectangle-lines start end separator))))
+
+(defun jqt/string-friendly-rectangle-lines (start end &optional separator)
+  "Lines within a rectangle defined by region but where each line is
+delimited by its ending string rather than the rectangle's regular
+boundaries.
+
+Optional SEPARATOR to concatenate the collected lines and return a string."
+  (interactive "r")
+  (let* (;; Each line in the region.
+         (lines (split-string (buffer-substring-no-properties start end) "\n" t))
+         ;; The difference in length between the first two lines
+         (chars-to-ltrim (- (length (cadr lines)) (length (car lines))))
+         ;; Left trim each line a predefined # of chars, but skip the first
+         ;; line.
+         (ltrimmed-lines (append (list (car lines))
+                                 (mapcar '(lambda (line)
+                                            (substring line chars-to-ltrim))
+                                         (cdr lines))))
+         ;; The length of the last line, a.k.a. soft right rectangle
+         ;; boundary.
+         (soft-right-boundary (length (car (last ltrimmed-lines))))
+         ;; Substring each line at the soft right boundary.
+         (strings (mapcar '(lambda (line)
+                           (jqt/soft-substring line 0 soft-right-boundary))
+                        ltrimmed-lines))
+         )
+    (if separator
+        (mapconcat 'concat strings separator)
+      strings)
+    ))
+
+(defun jqt/point ()
+  ""
+  (interactive)
+  (message "%d" (point)))
+
+(defun jqt/previous-word-right-boundary-in-string (string point)
+  "Given a string, return the point of the previous word's right boundary.
+
+The point returned by search needs to be substracted by one or two, for
+backward or forward search respectively, because I'm using a temporary
+buffer which starts at 1, not 0 as used in substring as the first
+character in the string.  Thus point also needs to be incremented."
+  ;; Create a temporary buffer to traverse using search.
+  (with-temp-buffer
+    (insert string)
+    ;; Go to point to check word boundary.
+    (goto-char (1+ point))
+    ;; If current char (at point) a newline or a space...
+    (if (memq (char-after) '(10 32))
+        ;; ...then:
+        ;; - search backward for the previous word's boundary
+        ;; - minus 1 because point was incremented...
+        ;; . o O (i don't know why \b needs to be escaped twice)
+        (1- (search-backward-regexp "\\b" nil t))
+      ;; ...else:
+      ;; - point's within a word
+      ;; - search forward for the next space
+      ;; - minus 2 because search will put the cursor right after the
+      ;;   last non-whitespace character and point was incremented.
+      (let ((next-space (search-forward-regexp "[\s\t\n]" nil t)))
+        (if next-space
+            (- next-space 2)
+          point)))))
+
+(defun jqt/soft-substring (line from soft-to)
+  "Should probably work with a soft form..."
+  (let ((string (substring line from (jqt/previous-word-right-boundary-in-string line soft-to))))
+    string))
 
 (defun jqt/reconnect-shell ()
   ""
   (interactive)
-  (shell (current-buffer)))
+  (when (string-match "^;shell " (buffer-name))
+    (shell (current-buffer))))
+
+(defun jqt/insert-current-date-time (&optional in-seconds-p)
+  ""
+  (interactive "P")
+  (let ((seconds (floor (time-to-seconds (current-time)))))
+    (if in-seconds-p
+        (insert (format "%s" seconds))
+      (insert (jqt/convert-from-unix-timestamp seconds t)))))
+
+(defun jqt/trim-string (string)
+  ""
+  (replace-regexp-in-string "^[ \n\t]*" ""
+                            (replace-regexp-in-string "[ \n\t]*$" "" string)))
+
+(defun jqt/equalize (start end)
+  ""
+  (interactive "r")
+  (let* ((lines (split-string (buffer-substring start end) "\n" t))
+         (positions (mapcar 'jqt/equal-sign-point lines))
+         (max (apply 'max positions)))
+    (message "%s" max)))
+
+(defun jqt/equal-sign-point (string)
+  ""
+  (string-match "=" (jqt/trim-string string)))
+
+;;;;;;;;;;;
+;; MySQL ;;
+;;;;;;;;;;;
+
+;; Turn off line-wrap.
+(add-hook 'sql-interactive-mode-hook '(lambda () (toggle-truncate-lines 1)))
+
+(defun mysql/table-name-at-point ()
+  ""
+  (let (;; Store current point.
+        (start (point))
+        ;; Store point at the end of the table name.
+        (end (1- (search-forward-regexp "[\s;]"))))
+    ;; Store table name kill ring for later use.
+    (copy-region-as-kill start end)
+    ;; Set name to table name in buffer.
+    (buffer-substring start end)))
+
+(defun mysql/table-name (&optional option)
+  "Option:
+nil - at point
+1   - partial
+2   - full"
+  (case option
+    (1 (mysql/table-name-from-partial))
+    (2 ())
+    (t (mysql/table-name-at-point))))
+
+(defun mysql/desc-table (&optional option)
+  ""
+  (interactive "P")
+  (let ((name (mysql/table-name option)))
+    ;; Move to mysql prompt.
+    (search-forward-regexp "mysql> $" nil t)
+    ;; Enter command.
+    (insert (format "desc %s;" name))
+    (comint-send-input)))
+
+(defun mysql/select-fields-in-rectangle (start end)
+  ""
+  (interactive "r")
+  (let ((fields (jqt/string-friendly-rectangle-lines start end ", ")))
+    ;; Move to mysql prompt.
+    (search-forward-regexp "mysql> $" nil t)
+    (insert (format "select %s from " fields))))
 
 ;;;;;;;;;;;;;;;
 ;; PHP stuff ;;
@@ -375,34 +527,7 @@ SELECT ct.url_title, ct.entry_id, ud.title, ud.field_id_%1 AS navigation_title, 
     (search-backward-regexp "function +[[:word:]_]+\s*\(.*\)\\([\s\n]*{\\)?" nil t)
     (let ((start (point)))
       (search-forward "{")
-      (message "%s" (buffer-substring start (point))))))
-
-;; zend style
-(defcustom zend-style
-  '((c-basic-offset . 4)
-    (fill-column . 80)
-    ;; (show-trailing-whitespace . t)
-    ;; (indent-tabs-mode . nil)
-    (require-final-newline . t)
-    (c-offsets-alist . ((arglist-close . 0)
-                        (arglist-cont-nonempty . c-lineup-math)
-                        (arglist-intro . +)
-                        (case-label . +)
-                        (comment-intro . 0)))
-    (c-doc-comment-style . (php-mode . javadoc))
-    (c-label-minimum-indentation . 1)
-    (c-special-indent-hook . c-gnu-impose-minimum)
-    )
-  "Zend coding style.
-According to http://zend.org/coding-standards#indenting."
-  :group 'zend)
-
-(defun test/zend-mode ()
-  ""
-  (interactive)
-  (c-add-style "zend" zend-style)
-  (when (eq major-mode 'php-mode)
-    (c-set-style "zend")))
+      (message "%s" (replace-regexp-in-string "[\n\s]+" "\s" (buffer-substring start (point)))))))
 
 ;;;;;;;;;;
 ;; zend ;;
@@ -412,10 +537,12 @@ According to http://zend.org/coding-standards#indenting."
   ""
   (interactive)
   (save-excursion
-    (search-forward "class ")
+    (beginning-of-buffer)
+    (search-forward-regexp "^class " nil t)
     (let ((start (point)))
-      (search-forward (replace-regexp-in-string "\.[[:word:]]+$" "" (buffer-name)))
-      (let* ((end (point))
+      ;; (search-forward (replace-regexp-in-string "\.[[:word:]]+$" "" (buffer-name)))
+      (search-forward-regexp "[^_[:word:]]" nil t)
+      (let* ((end (1- (point)))
              (class (buffer-substring start end)))
         (rename-buffer class)))))
 
@@ -704,6 +831,12 @@ According to http://zend.org/coding-standards#indenting."
     (cond ((string-match "\.php$" (buffer-name)) (zend/rename-buffer-to-classname))
           ((string-match "\.\\(p\\)?html" (buffer-name)) (zend/rename-buffer-to-specify-path-from-project)))))
 
+(defadvice ido-find-file (after ido-rename-org-buffer-to-parent-directory activate)
+  ""
+  (when (string= ".org" (buffer-name))
+    (let ((path (split-string (buffer-file-name) "/")))
+      (rename-buffer (format "%s.org" (car (last path 2)))))))
+
 ;;;;;;;;;;;;;
 ;; c stuff ;;
 ;;;;;;;;;;;;;
@@ -734,11 +867,34 @@ According to http://zend.org/coding-standards#indenting."
 (global-set-key (kbd "C-S-t") (lambda (name) (interactive "sName: ") (term "/bin/bash") (rename-buffer (concat ";term " name))))
 (global-set-key (kbd "C-S-x o") (lambda () (interactive) (other-frame 1)))
 
-;; Custom all
-(global-set-key (kbd "C-x C-b") 'jqt/buffer-list)
-(global-set-key (kbd "C-c i b") 'c/insert-buffer-name)
-(global-set-key (kbd "C-c u") 'uncomment-region)
-(global-set-key (kbd "M-Y") 'yank-pop-forwards)
+;;;;;;;;;;;;;;;;
+;; Custom all ;;
+;;;;;;;;;;;;;;;;;;;;;;
+;; Rules:           ;;
+;; - < for inserts  ;;
+;; - > for messages ;;
+;; - , for windows  ;;
+;; - ; for shells   ;;
+;; - " for dired    ;;
+;;;;;;;;;;;;;;;;;;;;;;
+(global-set-key (kbd "C-x C-b")  'jqt/buffer-list)
+(global-set-key (kbd "C-< b")    'c/insert-buffer-name)
+(global-set-key (kbd "C-c u")    'uncomment-region)
+(global-set-key (kbd "M-Y")      'yank-pop-forwards)
+(global-set-key (kbd "C-, p")    'windmove-up)
+(global-set-key (kbd "C-, b")    'windmove-left)
+(global-set-key (kbd "C-, f")    'windmove-right)
+(global-set-key (kbd "C-, n")    'windmove-down)
+(global-set-key (kbd "C-< t")    'jqt/insert-current-date-time)
+(global-set-key (kbd "C-; r")    'jqt/reconnect-shell)
+(global-set-key (kbd "C-; m d")  'mysql/desc-table)
+(global-set-key (kbd "C-> t")    'jqt/convert-from-unix-timestamp)
+(global-set-key (kbd "C-> p")    'jqt/point)
+(global-set-key (kbd "C-\" o a") 'jqt/dired-athens)
+;;;;;;;;;;;;;;
+;; Fallback ;;
+;;;;;;;;;;;;;;
+;; C-, does something else in Org mode.
 (global-set-key (kbd "C-c m p") 'windmove-up)
 (global-set-key (kbd "C-c m b") 'windmove-left)
 (global-set-key (kbd "C-c m f") 'windmove-right)
@@ -749,7 +905,8 @@ According to http://zend.org/coding-standards#indenting."
   ""
   (interactive)
   (define-key php-mode-map (kbd "M-p") 'php/previous-function)
-  (define-key php-mode-map (kbd "M-n") 'php/next-function))
+  (define-key php-mode-map (kbd "M-n") 'php/next-function)
+  (define-key php-mode-map (kbd "C-> f") 'php/function-signature))
 
 ;; Custom objc
 (defun ios/define-keys ()
