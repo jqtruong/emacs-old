@@ -69,6 +69,12 @@
 
 (set-frame-size-according-to-resolution)
 
+(set-default 'tramp-default-proxies-alist
+             ;; nil
+             ;;(quote ((".*" "\\`root\\'" "/ssh:%h:")))
+             (quote (("204\\.62\\.150\\.55" "\\`root\\'" "/ssh:%h:")))
+             )
+
 ;;;;;;;;
 ;; nX ;;
 ;;;;;;;;
@@ -87,7 +93,7 @@
 ;; bbdb ;;
 ;;;;;;;;;;
 
-(require 'bbdb-loaddefs "~/.emacs.d/mypa/bbdb/lisp/bbdb-loaddefs.el")
+;; (require 'bbdb-loaddefs "~/.emacs.d/mypa/bbdb/lisp/bbdb-loaddefs.el")
 
 ;;;;;;;;;
 ;; Org ;;
@@ -866,6 +872,7 @@ nil - at point
 (global-set-key (kbd "C-S-s") (lambda (name) (interactive "sName: ") (shell (concat ";shell " name))))
 (global-set-key (kbd "C-S-t") (lambda (name) (interactive "sName: ") (term "/bin/bash") (rename-buffer (concat ";term " name))))
 (global-set-key (kbd "C-S-x o") (lambda () (interactive) (other-frame 1)))
+(global-set-key (kbd "C-e") 'end-of-visual-line)
 
 ;;;;;;;;;;;;;;;;
 ;; Custom all ;;
