@@ -20,6 +20,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(auth-source-save-behavior nil)
  '(org-agenda-files nil)
  '(send-mail-function (quote smtpmail-send-it))
  '(smtpmail-smtp-server "smtp.gmail.com")
@@ -333,22 +334,11 @@ SELECT ct.url_title, ct.entry_id, ud.title, ud.field_id_%1 AS navigation_title, 
   (interactive)
   (find-file "/ssh:jtruong@athens.sierrabravo.net:public_html/"))
 
-(defun jqt/digits-at-point ()
-  ""
-  (let (;; Store current point.
-        (start (point))
-        ;; Store point at the end of the table name.
-        (end (1- (search-forward-regexp "[^[:digit:]]" nil t))))
-    ;; Store table name kill ring for later use.
-    (copy-region-as-kill start end)
-    ;; Set name to table name in buffer.
-    (buffer-substring start end)))
-
 (defun jqt/convert-from-unix-timestamp (seconds &optional no-message-p)
   ""
   (interactive (list (if current-prefix-arg
                          (string-to-number (read-from-minibuffer "Seconds: "))
-                       (string-to-number (jqt/digits-at-point)))))
+                       (number-at-point))))
   (let ((date-string (format-time-string "%Y-%m-%d %T" (seconds-to-time seconds))))
     (if no-message-p
         date-string
@@ -372,64 +362,44 @@ Optional SEPARATOR to concatenate the collected lines and return a string."
   (let* (;; Each line in the region.
          (lines (split-string (buffer-substring-no-properties start end) "\n" t))
          ;; The difference in length between the first two lines
-         (chars-to-ltrim (- (length (cadr lines)) (length (car lines))))
-         ;; Left trim each line a predefined # of chars, but skip the first
-         ;; line.
+         ;; (chars-to-ltrim (- (length (cadr lines)) (length (car lines))))
+         ;; Number of characters to trim off the left is
+         (chars-to-ltrim (- ;; the difference between
+                          start ;; point at the beginning of the region
+                          (save-excursion ;; and point at the beginning of the first line.
+                            (goto-char start) ;; Because currently at the end of the region.
+                            (beginning-of-line)
+                            (point))))
+         ;; Left trim each line a predefined # of chars, but skip the first line.
          (ltrimmed-lines (append (list (car lines))
                                  (mapcar '(lambda (line)
                                             (substring line chars-to-ltrim))
                                          (cdr lines))))
-         ;; The length of the last line, a.k.a. soft right rectangle
-         ;; boundary.
-         (soft-right-boundary (length (car (last ltrimmed-lines))))
-         ;; Substring each line at the soft right boundary.
+         ;; Substring of each string from beginning to end of line or next break.
          (strings (mapcar '(lambda (line)
-                           (jqt/soft-substring line 0 soft-right-boundary))
-                        ltrimmed-lines))
-         )
+                             (jqt/string-until-next-break line))
+                          ltrimmed-lines)))
     (if separator
         (mapconcat 'concat strings separator)
-      strings)
-    ))
+      strings)))
+
+(defun jqt/string-until-next-break (string)
+  ""
+  (with-temp-buffer
+    (insert string)
+    (goto-char 1)
+    (let ((start 1)
+          (end (if (search-forward " " nil t)
+                   (1- (point))
+                 (progn
+                   (end-of-line)
+                   (point)))))
+      (buffer-substring start end))))
 
 (defun jqt/point ()
   ""
   (interactive)
   (message "%d" (point)))
-
-(defun jqt/previous-word-right-boundary-in-string (string point)
-  "Given a string, return the point of the previous word's right boundary.
-
-The point returned by search needs to be substracted by one or two, for
-backward or forward search respectively, because I'm using a temporary
-buffer which starts at 1, not 0 as used in substring as the first
-character in the string.  Thus point also needs to be incremented."
-  ;; Create a temporary buffer to traverse using search.
-  (with-temp-buffer
-    (insert string)
-    ;; Go to point to check word boundary.
-    (goto-char (1+ point))
-    ;; If current char (at point) a newline or a space...
-    (if (memq (char-after) '(10 32))
-        ;; ...then:
-        ;; - search backward for the previous word's boundary
-        ;; - minus 1 because point was incremented...
-        ;; . o O (i don't know why \b needs to be escaped twice)
-        (1- (search-backward-regexp "\\b" nil t))
-      ;; ...else:
-      ;; - point's within a word
-      ;; - search forward for the next space
-      ;; - minus 2 because search will put the cursor right after the
-      ;;   last non-whitespace character and point was incremented.
-      (let ((next-space (search-forward-regexp "[\s\t\n]" nil t)))
-        (if next-space
-            (- next-space 2)
-          point)))))
-
-(defun jqt/soft-substring (line from soft-to)
-  "Should probably work with a soft form..."
-  (let ((string (substring line from (jqt/previous-word-right-boundary-in-string line soft-to))))
-    string))
 
 (defun jqt/reconnect-shell ()
   ""
