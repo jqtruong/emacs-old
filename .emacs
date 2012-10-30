@@ -70,11 +70,8 @@
 
 (set-frame-size-according-to-resolution)
 
-(set-default 'tramp-default-proxies-alist
-             ;; nil
-             ;;(quote ((".*" "\\`root\\'" "/ssh:%h:")))
-             (quote (("204\\.62\\.150\\.55" "\\`root\\'" "/ssh:%h:")))
-             )
+(set-default 'tramp-default-proxies-alist (quote (
+                                                  ("204\\.62\\.150\\.55" "\\`root\\'" "/ssh:jtruong@%h:"))))
 
 ;;;;;;;;
 ;; nX ;;
@@ -351,6 +348,11 @@ SELECT ct.url_title, ct.entry_id, ud.title, ud.field_id_%1 AS navigation_title, 
   (search-forward-regexp "^\$ $" nil t)
   (end-of-line)
   (insert (format "%s" (jqt/string-friendly-rectangle-lines start end separator))))
+
+(defun jqt/strings-in-rectangle (start end separator)
+  ""
+  (interactive "r\nsSeparator: ")
+  (kill-new (jqt/string-friendly-rectangle-lines start end separator)))
 
 (defun jqt/string-friendly-rectangle-lines (start end &optional separator)
   "Lines within a rectangle defined by region but where each line is
