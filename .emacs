@@ -64,14 +64,13 @@
         ;; from the screen height (for panels, menubars and
         ;; whatnot), then divide by the height of a char to
         ;; get the height we want
-        (add-to-list 'default-frame-alist 
+        (add-to-list 'default-frame-alist
                      (cons 'height (/ (- (x-display-pixel-height) 200)
                                       (frame-char-height)))))))
 
 (set-frame-size-according-to-resolution)
 
-(set-default 'tramp-default-proxies-alist (quote (
-                                                  ("204\\.62\\.150\\.55" "\\`root\\'" "/ssh:jtruong@%h:"))))
+(set-default 'tramp-default-proxies-alist (quote (("204\\.62\\.150\\.55" "\\`root\\'" "/ssh:jtruong@%h:"))))
 
 ;;;;;;;;
 ;; nX ;;
@@ -145,7 +144,7 @@
 ;; ibuffer stuff ;;
 ;;;;;;;;;;;;;;;;;;;
 
-(setq ibuffer-saved-filter-groups 
+(setq ibuffer-saved-filter-groups
         '(("ide"
            ("dired" (mode . dired-mode))
            ("Drupal" (filename . "drupal"))
@@ -164,7 +163,7 @@
   (let ((recent-buffer-name (buffer-name (elt (buffer-list) 1))))
     ad-do-it
     (if (bound-and-true-p ide-mode-p)
-        (progn 
+        (progn
           (ibuffer-jump-to-buffer recent-buffer-name)
           (ide/define-keys)))))
 (ad-activate 'ibuffer)
@@ -173,7 +172,7 @@
       '((mark modified read-only " "
               (name 18 18 :left elide)
               (size 9 -1 :right) " "
-              (mode 16 16 :left :elide) " " 
+              (mode 16 16 :left :elide) " "
               filename-and-process)
         (mark " " (name 16 -1) " " filename)
         (mark modified read-only " "
@@ -190,8 +189,8 @@
 ;;;;;;;;;;;;;;;;;
 
 (defun set-exec-path-from-shell-PATH ()
-  (let ((path-from-shell 
-         (replace-regexp-in-string "[[:space:]\n]*$" "" 
+  (let ((path-from-shell
+         (replace-regexp-in-string "[[:space:]\n]*$" ""
                                    (shell-command-to-string "$SHELL -l -c 'echo $PATH'"))))
     (setenv "PATH" path-from-shell)
     (setq exec-path (split-string path-from-shell path-separator))))
@@ -219,7 +218,7 @@ would return
 SELECT ct.url_title, ct.entry_id, ud.title, ud.field_id_%1 AS navigation_title, ud.field_id_%2 AS disable_module_zip...
 "
   (interactive "r"))
-              
+
 (defun ide ()
   ""
   (interactive)
@@ -237,7 +236,7 @@ SELECT ct.url_title, ct.entry_id, ud.title, ud.field_id_%1 AS navigation_title, 
   ;; Create small side window.
   (split-window (selected-window) 50 0)
   ;; Open and set up ibuffer.
-  (ibuffer)  
+  (ibuffer)
   (ibuffer-switch-to-saved-filter-groups "ide")
   (ibuffer-do-sort-by-alphabetic)
   ;; Dedicate this window to ibuffer only.
@@ -321,7 +320,7 @@ SELECT ct.url_title, ct.entry_id, ud.title, ud.field_id_%1 AS navigation_title, 
 ;;         (make-frame))
 ;;     (other-frame 1)
 ;;     (set-window-buffer (selected-window) buf)))
-;; 
+;;
 ;; (add-to-list 'special-display-buffer-names '("*Completions*" jqt/display-in-other-frame))
 ;; (add-to-list 'special-display-buffer-names '("*Help*" jqt/display-in-other-frame))
 ;; (add-to-list 'special-display-buffer-names '("*Ido Completions*" jqt/display-in-other-frame))
@@ -486,6 +485,8 @@ nil - at point
 
 (add-to-list 'auto-mode-alist '("\\.php$\\|\\.inc$" . php-mode))
 
+(add-hook 'php-mode-hook (lambda () (php/define-keys)))
+
 (defun php/previous-function ()
   ""
   (interactive)
@@ -506,6 +507,27 @@ nil - at point
     (let ((start (point)))
       (search-forward "{")
       (message "%s" (replace-regexp-in-string "[\n\s]+" "\s" (buffer-substring start (point)))))))
+
+;;;;;;;;;;;;
+;; Drupal ;;
+;;;;;;;;;;;;
+
+;; see http://drupal.org/node/59868
+(define-derived-mode drupal-mode php-mode "Drupal"
+  "Major mode for Drupal coding.\n\n\\{drupal-mode-map}"
+  (setq c-basic-offset 2)
+  (setq indent-tabs-mode nil)
+  (setq fill-column 78)
+  (setq show-trailing-whitespace t)
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+  (c-set-offset 'case-label '+)
+  (c-set-offset 'arglist-close 0)
+  (c-set-offset 'arglist-intro '+) ; for FAPI arrays and DBTNG
+  (c-set-offset 'arglist-cont-nonempty 'c-lineup-math) ; for DBTNG fields and values
+  (run-hooks 'drupal-mode-hook))
+
+(add-to-list 'auto-mode-alist '("\\.\\(module\\|test\\|install\\|theme\\)$" . drupal-mode))
+(add-to-list 'auto-mode-alist '("\\.info" . conf-windows-mode))
 
 ;;;;;;;;;;
 ;; zend ;;
@@ -548,6 +570,8 @@ nil - at point
 ;;;;;;;;;;;;;;;
 
 (add-to-list 'auto-mode-alist '("/iOS/.*\\.h$" . objc-mode))
+
+(add-hook 'php-mode-hook (lambda () (ios/define-keys)))
 
 (fset 'ios/synthesize-property
    (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([67108896 5 134217826 23 64 115 121 110 116 104 101 115 105 122 101 32 67108896 5 2 134217847 32 61 32 95 25 5 14 1] 0 "%d")) arg)))
@@ -606,7 +630,7 @@ nil - at point
       (end-of-line)
       (newline-and-indent)
       (insert (format "@property (nonatomic, %s) %s %s;" setter type (if (string= setter "retain") (concat "*" name) name)))
-      
+
       ;; Switch to the implementation.
       (switch-to-buffer (ios/get-counterpart-buffer (buffer-name)))
       ;; Move to the implementation's definition.
@@ -623,7 +647,7 @@ nil - at point
       (end-of-line)
       (newline-and-indent)
       (insert (format "@synthesize %s = _%s;" name name))
-      
+
       (if (string= setter "retain")
           (progn
             ;; Search and add dealloc selector if necessary.
@@ -673,7 +697,7 @@ nil - at point
       (end-of-line)
       (newline-and-indent)
       (insert (format "@property (%s, nonatomic) %s %s;" setter type (if pointer? (concat "*" name) name)))
-      
+
       ;; Switch to the implementation.
       (switch-to-buffer (ios/get-counterpart-buffer (buffer-name)))
       ;; Move to the implementation's definition.
@@ -796,7 +820,7 @@ nil - at point
 (defadvice ido-find-file (after ido-find-file-ios-counterpart activate)
   ""
   (if (string-match "/iOS/" (buffer-file-name))
-      (progn 
+      (progn
         (if (string-match "\\.m$" (buffer-name))
             (find-file (replace-regexp-in-string "\\.m$" ".h" (buffer-name)))
           (if (string-match "\\.h$" (buffer-name))
@@ -829,7 +853,7 @@ nil - at point
 ;;;;;;;;;;;;;;;;;;
 
 ;; mac specific settings
-(when (eq system-type 'darwin) 
+(when (eq system-type 'darwin)
   (setq mac-option-modifier 'alt)
   (setq mac-command-modifier 'meta)
   ;; sets fn-delete to be right-delete
@@ -864,6 +888,10 @@ nil - at point
 (global-set-key (kbd "C-, b")    'windmove-left)
 (global-set-key (kbd "C-, f")    'windmove-right)
 (global-set-key (kbd "C-, n")    'windmove-down)
+(global-set-key (kbd "C-, C-n")  (lambda () (interactive) (windmove-down) (windmove-left)))
+(global-set-key (kbd "C-, C-S-n")  (lambda () (interactive) (windmove-down) (windmove-right)))
+(global-set-key (kbd "C-, C-p")  (lambda () (interactive) (windmove-up) (windmove-left)))
+(global-set-key (kbd "C-, C-S-p")  (lambda () (interactive) (windmove-up) (windmove-right)))
 (global-set-key (kbd "C-< t")    'jqt/insert-current-date-time)
 (global-set-key (kbd "C-; r")    'jqt/reconnect-shell)
 (global-set-key (kbd "C-; m d")  'mysql/desc-table)
@@ -881,11 +909,11 @@ nil - at point
 
 ;; Custom PHP
 (defun php/define-keys ()
-  ""
-  (interactive)
-  (define-key php-mode-map (kbd "M-p") 'php/previous-function)
-  (define-key php-mode-map (kbd "M-n") 'php/next-function)
-  (define-key php-mode-map (kbd "C-> f") 'php/function-signature))
+ ""
+ (interactive)
+ (define-key php-mode-map (kbd "M-p") 'php/previous-function)
+ (define-key php-mode-map (kbd "M-n") 'php/next-function)
+ (define-key php-mode-map (kbd "C-> f") 'php/function-signature))
 
 ;; Custom objc
 (defun ios/define-keys ()
@@ -911,4 +939,13 @@ nil - at point
 (defun ide/define-keys ()
   ""
   (interactive)
-  (define-key ibuffer-mode-map "o" 'ide/ibuffer-visit-buffer-other-window))
+  (message "Defining keys for ide.")
+  ;; Display buffer in window directly top right of the ibuffer.
+  (define-key ibuffer-mode-map "o" 'ide/ibuffer-visit-buffer-other-window)
+  ;; Quickly go back and forth between windows skipping the ibuffer...in due time.
+  ;; Modifies Emacs default of selecting text while moving the cursor.
+  (global-set-key (kbd "C-S-f") 'windmove-right)
+  (global-set-key (kbd "C-S-b") 'windmove-left))
+
+
+;; to be classified

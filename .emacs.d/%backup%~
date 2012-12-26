@@ -1,0 +1,13 @@
+import os, sys, site
+
+ENV_PATH = os.path.realpath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(ENV_PATH)
+site.addsitedir(os.path.join(ENV_PATH, 'lib','python2.6','site-packages'))
+
+PROJECT_PATH = os.path.realpath(os.path.join(os.path.dirname(__file__)))
+sys.path.append(PROJECT_PATH)
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'docs.settings'
+
+import django.core.handlers.wsgi
+application = django.core.handlers.wsgi.WSGIHandler()
