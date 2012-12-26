@@ -104,6 +104,12 @@
 
 (setq org-agenda-files (list "~/Work/Nerdery/Nerdery.org"))
 
+;; active Babel languages
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((lisp . t)
+   (emacs-lisp . t)))
+
 ;;;;;;;;;;;
 ;; SLIME ;;
 ;;;;;;;;;;;
@@ -156,7 +162,10 @@
            ("emacs" (name . "^\\*.\*\\*$"))
            ("Org" (name . "\\.org$")))))
 
-(add-hook 'ibuffer-mode-hook '(lambda () (ibuffer-auto-mode 1)))
+(add-hook 'ibuffer-mode-hook '(lambda ()
+                                (ibuffer-auto-mode 1)
+                                (when (bound-and-true-p ide-mode-p)
+                                  (set-window-parameter (selected-window) 'no-other-window t))))
 
 ;; Ensure ibuffer opens with point at the current buffer's entry.
 (defadvice ibuffer (around ibuffer-point-to-buffer-in-other-window)
@@ -222,6 +231,9 @@ SELECT ct.url_title, ct.entry_id, ud.title, ud.field_id_%1 AS navigation_title, 
 (defun ide ()
   ""
   (interactive)
+  ;; First things first, set the ide-mode-p to t, referenced when
+  ;; ibuffer starts.
+  (setq ide-mode-p t)
   ;; Set list options for all consecutive directory browse after the first dired.
   (setq dired-listing-switches "-aogh")
   ;; Open current directory.
@@ -241,19 +253,22 @@ SELECT ct.url_title, ct.entry_id, ud.title, ud.field_id_%1 AS navigation_title, 
   (ibuffer-do-sort-by-alphabetic)
   ;; Dedicate this window to ibuffer only.
   (set-window-dedicated-p (selected-window) 1)
-  (setq ide-mode-p t)
   (other-window 1))
 
 (defun ide/resize-windows ()
   ""
   (interactive)
-  (if (bound-and-true-p ide-mode-p)
-      (progn
-        (delete-other-windows)
-        ;; Create small side window.
-        (split-window (selected-window) 50 1)
-        ;; Open and set up ibuffer.
-        (ibuffer))))
+  (when (bound-and-true-p ide-mode-p)
+    (delete-other-windows)
+    ;; Create small side window.
+    (split-window (selected-window) 50 1)
+    ;; Find the ibuffer buffer and set it to the current window.
+    (switch-to-buffer (get-buffer "*Ibuffer*"))
+    ;; Dedicate this window to ibuffer only.
+    (set-window-dedicated-p (selected-window) 1)
+    ;; And re-add window parameter
+    (set-window-parameter (selected-window) 'no-other-window t)
+    (other-window 1)))
 
 (defun ide/ibuffer-window-dedicate ()
   ""
@@ -869,6 +884,9 @@ nil - at point
 (global-set-key (kbd "C-S-t") (lambda (name) (interactive "sName: ") (term "/bin/bash") (rename-buffer (concat ";term " name))))
 (global-set-key (kbd "C-S-x o") (lambda () (interactive) (other-frame 1)))
 (global-set-key (kbd "C-e") 'end-of-visual-line)
+;; Quick other window shortcuts
+(global-set-key (kbd "C-S-f") (lambda () (interactive) (other-window 1)))
+(global-set-key (kbd "C-S-b") (lambda () (interactive) (other-window -1)))
 
 ;;;;;;;;;;;;;;;;
 ;; Custom all ;;
@@ -884,28 +902,12 @@ nil - at point
 (global-set-key (kbd "C-< b")    'c/insert-buffer-name)
 (global-set-key (kbd "C-c u")    'uncomment-region)
 (global-set-key (kbd "M-Y")      'yank-pop-forwards)
-(global-set-key (kbd "C-, p")    'windmove-up)
-(global-set-key (kbd "C-, b")    'windmove-left)
-(global-set-key (kbd "C-, f")    'windmove-right)
-(global-set-key (kbd "C-, n")    'windmove-down)
-(global-set-key (kbd "C-, C-n")  (lambda () (interactive) (windmove-down) (windmove-left)))
-(global-set-key (kbd "C-, C-S-n")  (lambda () (interactive) (windmove-down) (windmove-right)))
-(global-set-key (kbd "C-, C-p")  (lambda () (interactive) (windmove-up) (windmove-left)))
-(global-set-key (kbd "C-, C-S-p")  (lambda () (interactive) (windmove-up) (windmove-right)))
 (global-set-key (kbd "C-< t")    'jqt/insert-current-date-time)
 (global-set-key (kbd "C-; r")    'jqt/reconnect-shell)
 (global-set-key (kbd "C-; m d")  'mysql/desc-table)
 (global-set-key (kbd "C-> t")    'jqt/convert-from-unix-timestamp)
 (global-set-key (kbd "C-> p")    'jqt/point)
 (global-set-key (kbd "C-\" o a") 'jqt/dired-athens)
-;;;;;;;;;;;;;;
-;; Fallback ;;
-;;;;;;;;;;;;;;
-;; C-, does something else in Org mode.
-(global-set-key (kbd "C-c m p") 'windmove-up)
-(global-set-key (kbd "C-c m b") 'windmove-left)
-(global-set-key (kbd "C-c m f") 'windmove-right)
-(global-set-key (kbd "C-c m n") 'windmove-down)
 
 ;; Custom PHP
 (defun php/define-keys ()
@@ -942,10 +944,4 @@ nil - at point
   (message "Defining keys for ide.")
   ;; Display buffer in window directly top right of the ibuffer.
   (define-key ibuffer-mode-map "o" 'ide/ibuffer-visit-buffer-other-window)
-  ;; Quickly go back and forth between windows skipping the ibuffer...in due time.
-  ;; Modifies Emacs default of selecting text while moving the cursor.
-  (global-set-key (kbd "C-S-f") 'windmove-right)
-  (global-set-key (kbd "C-S-b") 'windmove-left))
-
-
-;; to be classified
+  (global-set-key (kbd "C-x 1") 'ide/resize-windows))
