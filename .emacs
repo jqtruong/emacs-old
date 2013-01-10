@@ -355,6 +355,11 @@ SELECT ct.url_title, ct.entry_id, ud.title, ud.field_id_%1 AS navigation_title, 
         date-string
       (message "%s" date-string))))
 
+(defun jqt/date-string-to-seconds (string)
+  ""
+  (interactive "sDate string: ")
+  (insert (format "%d" (float-time (date-to-time string)))))
+
 (defun jqt/convert-newlines-to (start end separator)
   ""
   (interactive "r\nsSeparator: ")
