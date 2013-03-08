@@ -3,6 +3,8 @@
 ;;;;;;;;;;;;;;;;
 
 (add-to-list 'load-path "~/.emacs.d/lisp")
+(add-to-list 'load-path "~/.emacs.d/mypa")
+(require 'my-setup)
 
 (require 'package)
 (package-initialize)
@@ -12,8 +14,9 @@
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
 
-(add-to-list 'load-path "~/.elisp")
+;; Modes
 (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
+(add-to-list 'auto-mode-alist '("\\.html$" . web-mode))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -70,7 +73,30 @@
 
 (set-frame-size-according-to-resolution)
 
-(set-default 'tramp-default-proxies-alist (quote (("204\\.62\\.150\\.55" "\\`root\\'" "/ssh:jtruong@%h:"))))
+(set-default 'tramp-default-proxies-alist (quote (("50\\.56\\.17\\.[0-9]+" "\\`root\\'" "/ssh:nerdery@%h:")
+                                                  ("108\\.166\\.7\\.152" "\\`root\\'" "/ssh:jdodson@%h:")
+                                                  ((regexp-quote (system-name)) nil nil))))
+
+(defun what-face (pos)
+  (interactive "d")
+  (let ((face (or (get-char-property (point) 'read-face-name)
+                  (get-char-property (point) 'face))))
+    (if face (message "Face: %s" face) (message "No face at %d" pos))))
+
+
+;;;;;;;;;;;;;;
+;; uniquify ;;
+;;;;;;;;;;;;;;
+(require 'uniquify) 
+(setq 
+ uniquify-buffer-name-style 'post-forward
+ uniquify-separator ":")
+
+;;;;;;;;;;
+;; mail ;;
+;;;;;;;;;;
+
+(setq starttls-use-gnutls t)
 
 ;;;;;;;;
 ;; nX ;;
@@ -407,7 +433,7 @@ Optional SEPARATOR to concatenate the collected lines and return a string."
 (defun jqt/string-until-next-break (string)
   ""
   (with-temp-buffer
-    (insert string)
+    (insert (replace-regexp-in-string "^ *" "" string))
     (goto-char 1)
     (let ((start 1)
           (end (if (search-forward " " nil t)
@@ -452,6 +478,27 @@ Optional SEPARATOR to concatenate the collected lines and return a string."
 (defun jqt/equal-sign-point (string)
   ""
   (string-match "=" (jqt/trim-string string)))
+
+(defun jqt/last-buffer ()
+  ""
+  (interactive)
+  (switch-to-buffer nil))
+
+(defun jqt/format-xml (&optional start end)
+  ""
+  (interactive "r")
+  ;; add an new line at the of end of any tag
+  ;; error: if content contains >
+  (replace-regexp ">" ">\n" nil start end)
+  ;; add a new line at the end of a tag's content, before it's closing tag
+  (replace-regexp "\\(.\\)</" "\\1\n</" nil start end)
+  ;; error: end will no longer be the end of the newly formatted region
+  (indent-region start end))
+
+(defun jqt/insert-seconds-from-date (date)
+  ""
+  (interactive "sDate: ")
+  (insert (format-seconds "%s" (time-to-seconds (date-to-time date)))))
 
 ;;;;;;;;;;;
 ;; MySQL ;;
@@ -889,9 +936,10 @@ nil - at point
 (global-set-key (kbd "C-S-t") (lambda (name) (interactive "sName: ") (term "/bin/bash") (rename-buffer (concat ";term " name))))
 (global-set-key (kbd "C-S-x o") (lambda () (interactive) (other-frame 1)))
 (global-set-key (kbd "C-e") 'end-of-visual-line)
-;; Quick other window shortcuts
+;; Quick other window/buffer shortcuts
 (global-set-key (kbd "C-S-f") (lambda () (interactive) (other-window 1)))
 (global-set-key (kbd "C-S-b") (lambda () (interactive) (other-window -1)))
+(global-set-key (kbd "C-S-l") 'jqt/last-buffer)
 
 ;;;;;;;;;;;;;;;;
 ;; Custom all ;;
@@ -899,7 +947,7 @@ nil - at point
 ;; Rules:           ;;
 ;; - < for inserts  ;;
 ;; - > for messages ;;
-;; - , for windows  ;;
+;; - , for buffers  ;;
 ;; - ; for shells   ;;
 ;; - " for dired    ;;
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -908,11 +956,13 @@ nil - at point
 (global-set-key (kbd "C-c u")    'uncomment-region)
 (global-set-key (kbd "M-Y")      'yank-pop-forwards)
 (global-set-key (kbd "C-< t")    'jqt/insert-current-date-time)
+(global-set-key (kbd "C-< s")    'jqt/insert-seconds-from-date)
 (global-set-key (kbd "C-; r")    'jqt/reconnect-shell)
 (global-set-key (kbd "C-; m d")  'mysql/desc-table)
 (global-set-key (kbd "C-> t")    'jqt/convert-from-unix-timestamp)
 (global-set-key (kbd "C-> p")    'jqt/point)
 (global-set-key (kbd "C-\" o a") 'jqt/dired-athens)
+(global-set-key (kbd "C-, r")    'rename-buffer)
 
 ;; Custom PHP
 (defun php/define-keys ()
@@ -950,3 +1000,5 @@ nil - at point
   ;; Display buffer in window directly top right of the ibuffer.
   (define-key ibuffer-mode-map "o" 'ide/ibuffer-visit-buffer-other-window)
   (global-set-key (kbd "C-x 1") 'ide/resize-windows))
+
+(put 'dired-find-alternate-file 'disabled nil)
