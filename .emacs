@@ -70,8 +70,9 @@
 
 (set-frame-size-according-to-resolution)
 
-(set-default 'tramp-default-proxies-alist (quote (
-                                                  ("204\\.62\\.150\\.55" "\\`root\\'" "/ssh:jtruong@%h:"))))
+(set-default 'tramp-default-proxies-alist (quote (("50\\.56\\.17\\.*" "\\`root\\'" "/ssh:nerdery@%h:")
+                                                  ("204\\.62\\.150\\.55" "\\`root\\'" "/ssh:jtruong@%h:")
+                                                  ("108\\.166\\.7\\.152" "\\`root\\'" "/ssh:jdodson@%h:"))))
 
 ;;;;;;;;
 ;; nX ;;
@@ -138,6 +139,9 @@
      (define-key paredit-mode-map [?\)] 'paredit-close-parenthesis)
      (define-key paredit-mode-map [(meta ?\))]
        'paredit-close-parenthesis-and-newline)))
+
+;; Quicklisp helper
+(load (expand-file-name "~/quicklisp/slime-helper.el"))
 
 ;; SBCL
 (setq slime-lisp-implementations
@@ -403,7 +407,7 @@ Optional SEPARATOR to concatenate the collected lines and return a string."
 (defun jqt/string-until-next-break (string)
   ""
   (with-temp-buffer
-    (insert string)
+    (insert (replace-regexp-in-string "^ *" "" string))
     (goto-char 1)
     (let ((start 1)
           (end (if (search-forward " " nil t)
@@ -431,6 +435,11 @@ Optional SEPARATOR to concatenate the collected lines and return a string."
     (if in-seconds-p
         (insert (format "%s" seconds))
       (insert (jqt/convert-from-unix-timestamp seconds t)))))
+
+(defun jqt/insert-seconds-from-date (date)
+  ""
+  (interactive "sDate: ")
+  (insert (format-seconds "%s" (time-to-seconds (date-to-time date)))))
 
 (defun jqt/trim-string (string)
   ""
@@ -918,3 +927,4 @@ nil - at point
   (interactive)
   (define-key ibuffer-mode-map "o" 'ide/ibuffer-visit-buffer-other-window)
   (global-set-key (kbd "C-x 1") 'ide/resize-windows))
+(put 'dired-find-alternate-file 'disabled nil)
