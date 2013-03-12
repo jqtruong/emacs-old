@@ -3,6 +3,8 @@
 ;;;;;;;;;;;;;;;;
 
 (add-to-list 'load-path "~/.emacs.d/lisp")
+(add-to-list 'load-path "~/.emacs.d/mypa")
+(require 'my-setup)
 
 (require 'package)
 (package-initialize)
@@ -12,8 +14,9 @@
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
 
-(add-to-list 'load-path "~/.elisp")
+;; Modes
 (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
+(add-to-list 'auto-mode-alist '("\\.html$" . web-mode))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -31,6 +34,9 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+;; Dired - open new directory in same buffer with `a'
+(put 'dired-find-alternate-file 'disabled nil)
 
 ;; Fill in tabs with spaces.
 (setq-default indent-tabs-mode nil)
@@ -64,7 +70,7 @@
         ;; from the screen height (for panels, menubars and
         ;; whatnot), then divide by the height of a char to
         ;; get the height we want
-        (add-to-list 'default-frame-alist 
+        (add-to-list 'default-frame-alist
                      (cons 'height (/ (- (x-display-pixel-height) 200)
                                       (frame-char-height)))))))
 
@@ -73,6 +79,26 @@
 (set-default 'tramp-default-proxies-alist (quote (("50\\.56\\.17\\.*" "\\`root\\'" "/ssh:nerdery@%h:")
                                                   ("204\\.62\\.150\\.55" "\\`root\\'" "/ssh:jtruong@%h:")
                                                   ("108\\.166\\.7\\.152" "\\`root\\'" "/ssh:jdodson@%h:"))))
+
+(defun what-face (pos)
+  (interactive "d")
+  (let ((face (or (get-char-property (point) 'read-face-name)
+                  (get-char-property (point) 'face))))
+    (if face (message "Face: %s" face) (message "No face at %d" pos))))
+
+;;;;;;;;;;;;;;
+;; uniquify ;;
+;;;;;;;;;;;;;;
+(require 'uniquify) 
+(setq 
+ uniquify-buffer-name-style 'post-forward
+ uniquify-separator ":")
+
+;;;;;;;;;;
+;; mail ;;
+;;;;;;;;;;
+
+(setq starttls-use-gnutls t)
 
 ;;;;;;;;
 ;; nX ;;
@@ -155,7 +181,7 @@
 ;; ibuffer stuff ;;
 ;;;;;;;;;;;;;;;;;;;
 
-(setq ibuffer-saved-filter-groups 
+(setq ibuffer-saved-filter-groups
         '(("ide"
            ("dired" (mode . dired-mode))
            ("Drupal" (filename . "drupal"))
@@ -177,7 +203,7 @@
   (let ((recent-buffer-name (buffer-name (elt (buffer-list) 1))))
     ad-do-it
     (if (bound-and-true-p ide-mode-p)
-        (progn 
+        (progn
           (ibuffer-jump-to-buffer recent-buffer-name)
           (ide/define-keys)))))
 (ad-activate 'ibuffer)
@@ -186,7 +212,7 @@
       '((mark modified read-only " "
               (name 18 18 :left elide)
               (size 9 -1 :right) " "
-              (mode 16 16 :left :elide) " " 
+              (mode 16 16 :left :elide) " "
               filename-and-process)
         (mark " " (name 16 -1) " " filename)
         (mark modified read-only " "
@@ -203,8 +229,8 @@
 ;;;;;;;;;;;;;;;;;
 
 (defun set-exec-path-from-shell-PATH ()
-  (let ((path-from-shell 
-         (replace-regexp-in-string "[[:space:]\n]*$" "" 
+  (let ((path-from-shell
+         (replace-regexp-in-string "[[:space:]\n]*$" ""
                                    (shell-command-to-string "$SHELL -l -c 'echo $PATH'"))))
     (setenv "PATH" path-from-shell)
     (setq exec-path (split-string path-from-shell path-separator))))
@@ -232,7 +258,7 @@ would return
 SELECT ct.url_title, ct.entry_id, ud.title, ud.field_id_%1 AS navigation_title, ud.field_id_%2 AS disable_module_zip...
 "
   (interactive "r"))
-              
+
 (defun ide ()
   ""
   (interactive)
@@ -253,7 +279,7 @@ SELECT ct.url_title, ct.entry_id, ud.title, ud.field_id_%1 AS navigation_title, 
   ;; Create small side window.
   (split-window (selected-window) 50 0)
   ;; Open and set up ibuffer.
-  (ibuffer)  
+  (ibuffer)
   (ibuffer-switch-to-saved-filter-groups "ide")
   (ibuffer-do-sort-by-alphabetic)
   ;; Dedicate this window to ibuffer only.
@@ -340,7 +366,7 @@ SELECT ct.url_title, ct.entry_id, ud.title, ud.field_id_%1 AS navigation_title, 
 ;;         (make-frame))
 ;;     (other-frame 1)
 ;;     (set-window-buffer (selected-window) buf)))
-;; 
+;;
 ;; (add-to-list 'special-display-buffer-names '("*Completions*" jqt/display-in-other-frame))
 ;; (add-to-list 'special-display-buffer-names '("*Help*" jqt/display-in-other-frame))
 ;; (add-to-list 'special-display-buffer-names '("*Ido Completions*" jqt/display-in-other-frame))
@@ -359,6 +385,11 @@ SELECT ct.url_title, ct.entry_id, ud.title, ud.field_id_%1 AS navigation_title, 
     (if no-message-p
         date-string
       (message "%s" date-string))))
+
+(defun jqt/date-string-to-seconds (string)
+  ""
+  (interactive "sDate string: ")
+  (insert (format "%d" (float-time (date-to-time string)))))
 
 (defun jqt/convert-newlines-to (start end separator)
   ""
@@ -458,6 +489,27 @@ Optional SEPARATOR to concatenate the collected lines and return a string."
   ""
   (string-match "=" (jqt/trim-string string)))
 
+(defun jqt/last-buffer ()
+  ""
+  (interactive)
+  (switch-to-buffer nil))
+
+(defun jqt/format-xml (&optional start end)
+  ""
+  (interactive "r")
+  ;; add an new line at the of end of any tag
+  ;; error: if content contains >
+  (replace-regexp ">" ">\n" nil start end)
+  ;; add a new line at the end of a tag's content, before it's closing tag
+  (replace-regexp "\\(.\\)</" "\\1\n</" nil start end)
+  ;; error: end will no longer be the end of the newly formatted region
+  (indent-region start end))
+
+(defun jqt/insert-seconds-from-date (date)
+  ""
+  (interactive "sDate: ")
+  (insert (format-seconds "%s" (time-to-seconds (date-to-time date)))))
+
 ;;;;;;;;;;;
 ;; MySQL ;;
 ;;;;;;;;;;;
@@ -510,6 +562,8 @@ nil - at point
 
 (add-to-list 'auto-mode-alist '("\\.php$\\|\\.inc$" . php-mode))
 
+(add-hook 'php-mode-hook (lambda () (php/define-keys)))
+
 (defun php/previous-function ()
   ""
   (interactive)
@@ -530,6 +584,27 @@ nil - at point
     (let ((start (point)))
       (search-forward "{")
       (message "%s" (replace-regexp-in-string "[\n\s]+" "\s" (buffer-substring start (point)))))))
+
+;;;;;;;;;;;;
+;; Drupal ;;
+;;;;;;;;;;;;
+
+;; see http://drupal.org/node/59868
+(define-derived-mode drupal-mode php-mode "Drupal"
+  "Major mode for Drupal coding.\n\n\\{drupal-mode-map}"
+  (setq c-basic-offset 2)
+  (setq indent-tabs-mode nil)
+  (setq fill-column 78)
+  (setq show-trailing-whitespace t)
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+  (c-set-offset 'case-label '+)
+  (c-set-offset 'arglist-close 0)
+  (c-set-offset 'arglist-intro '+) ; for FAPI arrays and DBTNG
+  (c-set-offset 'arglist-cont-nonempty 'c-lineup-math) ; for DBTNG fields and values
+  (run-hooks 'drupal-mode-hook))
+
+(add-to-list 'auto-mode-alist '("\\.\\(module\\|test\\|install\\|theme\\)$" . drupal-mode))
+(add-to-list 'auto-mode-alist '("\\.info" . conf-windows-mode))
 
 ;;;;;;;;;;
 ;; zend ;;
@@ -572,6 +647,8 @@ nil - at point
 ;;;;;;;;;;;;;;;
 
 (add-to-list 'auto-mode-alist '("/iOS/.*\\.h$" . objc-mode))
+
+(add-hook 'php-mode-hook (lambda () (ios/define-keys)))
 
 (fset 'ios/synthesize-property
    (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([67108896 5 134217826 23 64 115 121 110 116 104 101 115 105 122 101 32 67108896 5 2 134217847 32 61 32 95 25 5 14 1] 0 "%d")) arg)))
@@ -630,7 +707,7 @@ nil - at point
       (end-of-line)
       (newline-and-indent)
       (insert (format "@property (nonatomic, %s) %s %s;" setter type (if (string= setter "retain") (concat "*" name) name)))
-      
+
       ;; Switch to the implementation.
       (switch-to-buffer (ios/get-counterpart-buffer (buffer-name)))
       ;; Move to the implementation's definition.
@@ -647,7 +724,7 @@ nil - at point
       (end-of-line)
       (newline-and-indent)
       (insert (format "@synthesize %s = _%s;" name name))
-      
+
       (if (string= setter "retain")
           (progn
             ;; Search and add dealloc selector if necessary.
@@ -697,7 +774,7 @@ nil - at point
       (end-of-line)
       (newline-and-indent)
       (insert (format "@property (%s, nonatomic) %s %s;" setter type (if pointer? (concat "*" name) name)))
-      
+
       ;; Switch to the implementation.
       (switch-to-buffer (ios/get-counterpart-buffer (buffer-name)))
       ;; Move to the implementation's definition.
@@ -820,7 +897,7 @@ nil - at point
 (defadvice ido-find-file (after ido-find-file-ios-counterpart activate)
   ""
   (if (string-match "/iOS/" (buffer-file-name))
-      (progn 
+      (progn
         (if (string-match "\\.m$" (buffer-name))
             (find-file (replace-regexp-in-string "\\.m$" ".h" (buffer-name)))
           (if (string-match "\\.h$" (buffer-name))
@@ -853,7 +930,7 @@ nil - at point
 ;;;;;;;;;;;;;;;;;;
 
 ;; mac specific settings
-(when (eq system-type 'darwin) 
+(when (eq system-type 'darwin)
   (setq mac-option-modifier 'alt)
   (setq mac-command-modifier 'meta)
   ;; sets fn-delete to be right-delete
@@ -869,8 +946,10 @@ nil - at point
 (global-set-key (kbd "C-S-t") (lambda (name) (interactive "sName: ") (term "/bin/bash") (rename-buffer (concat ";term " name))))
 (global-set-key (kbd "C-S-x o") (lambda () (interactive) (other-frame 1)))
 (global-set-key (kbd "C-e") 'end-of-visual-line)
+;; Quick other window/buffer shortcuts
 (global-set-key (kbd "C-S-f") (lambda () (interactive) (other-window 1)))
 (global-set-key (kbd "C-S-b") (lambda () (interactive) (other-window -1)))
+(global-set-key (kbd "C-S-l") 'jqt/last-buffer)
 
 ;;;;;;;;;;;;;;;;
 ;; Custom all ;;
@@ -878,7 +957,7 @@ nil - at point
 ;; Rules:           ;;
 ;; - < for inserts  ;;
 ;; - > for messages ;;
-;; - , for windows  ;;
+;; - , for buffers  ;;
 ;; - ; for shells   ;;
 ;; - " for dired    ;;
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -887,19 +966,21 @@ nil - at point
 (global-set-key (kbd "C-c u")    'uncomment-region)
 (global-set-key (kbd "M-Y")      'yank-pop-forwards)
 (global-set-key (kbd "C-< t")    'jqt/insert-current-date-time)
+(global-set-key (kbd "C-< s")    'jqt/insert-seconds-from-date)
 (global-set-key (kbd "C-; r")    'jqt/reconnect-shell)
 (global-set-key (kbd "C-; m d")  'mysql/desc-table)
 (global-set-key (kbd "C-> t")    'jqt/convert-from-unix-timestamp)
 (global-set-key (kbd "C-> p")    'jqt/point)
 (global-set-key (kbd "C-\" o a") 'jqt/dired-athens)
+(global-set-key (kbd "C-, r")    'rename-buffer)
 
 ;; Custom PHP
 (defun php/define-keys ()
-  ""
-  (interactive)
-  (define-key php-mode-map (kbd "M-p") 'php/previous-function)
-  (define-key php-mode-map (kbd "M-n") 'php/next-function)
-  (define-key php-mode-map (kbd "C-> f") 'php/function-signature))
+ ""
+ (interactive)
+ (define-key php-mode-map (kbd "M-p") 'php/previous-function)
+ (define-key php-mode-map (kbd "M-n") 'php/next-function)
+ (define-key php-mode-map (kbd "C-> f") 'php/function-signature))
 
 ;; Custom objc
 (defun ios/define-keys ()
@@ -925,6 +1006,7 @@ nil - at point
 (defun ide/define-keys ()
   ""
   (interactive)
+  (message "Defining keys for ide.")
+  ;; Display buffer in window directly top right of the ibuffer.
   (define-key ibuffer-mode-map "o" 'ide/ibuffer-visit-buffer-other-window)
   (global-set-key (kbd "C-x 1") 'ide/resize-windows))
-(put 'dired-find-alternate-file 'disabled nil)
