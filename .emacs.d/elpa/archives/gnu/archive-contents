@@ -1,10 +1,6 @@
 (1
  (ack .
-<<<<<<< HEAD
-      [(0 8)
-=======
       [(0 9)
->>>>>>> fe9e26aba89cf220c0fa8d0bac30b7bdfe3f4155
        nil "Interface to ack, a source code search tool" tar])
  (adaptive-wrap .
 		[(0 2)
@@ -111,11 +107,7 @@
 	 [(0 8)
 	  nil "OAuth 2.0 Authorization Protocol" single])
  (org .
-<<<<<<< HEAD
-      [(20121217)
-=======
       [(20130304)
->>>>>>> fe9e26aba89cf220c0fa8d0bac30b7bdfe3f4155
        nil "Outline-based notes management and organizer" tar])
  (quarter-plane .
 		[(0 1)
@@ -124,11 +116,7 @@
 	[(0 1)
 	 nil "Queue data structure" single])
  (rainbow-mode .
-<<<<<<< HEAD
-	       [(0 6)
-=======
 	       [(0 7)
->>>>>>> fe9e26aba89cf220c0fa8d0bac30b7bdfe3f4155
 		nil "Colorize color names in buffers" single])
  (register-list .
 		[(0 1)
@@ -143,16 +131,11 @@
 		 [(4 0)
 		  nil "Insert operators with surrounding spaces smartly" single])
  (sml-mode .
-<<<<<<< HEAD
-	   [(6 2)
-	    nil "Major mode for editing (Standard) ML" single])
-=======
 	   [(6 4)
 	    nil "Major mode for editing (Standard) ML" single])
  (sokoban .
 	  [(1 0 4)
 	   nil "Sokoban game for emacs" tar])
->>>>>>> fe9e26aba89cf220c0fa8d0bac30b7bdfe3f4155
  (svg-clock .
 	    [(0 4)
 	     nil "Analog clock using Scalable Vector Graphics" single])
