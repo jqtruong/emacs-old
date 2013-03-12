@@ -1,4 +1,8 @@
+<<<<<<< HEAD
+;; -*- emacs-lisp -*- <13/03/08 10:11:35 /Users/jerometruong/.emacs.d/tramp>
+=======
 ;; -*- emacs-lisp -*- <13/03/08 14:09:11 /Users/jtruong/.emacs.d/tramp>
+>>>>>>> fe9e26aba89cf220c0fa8d0bac30b7bdfe3f4155
 ;; Tramp connection history.  Don't change this file.
 ;; You can delete it, forcing Tramp to reapply the checks.
 
@@ -157,6 +161,20 @@
   ("ls" "/bin/ls --color=never")
   ("inline-compress" "gzip")
   ("inline-decompress" "gzip -d"))
+<<<<<<< HEAD
+ (["scpc" "jtruong" "204.62.150.55" nil]
+  ("uname" "Linux 2.6.32-5-amd64")
+  ("test" "test")
+  ("remote-path"
+   ("/bin" "/usr/bin" "/usr/sbin" "/usr/local/bin"))
+  ("remote-shell" "/bin/sh")
+  ("busybox" nil)
+  ("perl-file-spec" t)
+  ("perl-cwd-realpath" t)
+  ("perl" "\\perl"))
+ (["scpc" "root" "108.166.7.154" nil]
+  ("uname" "Linux 3.0.0-23-virtual")
+=======
  (["sudo" "root" "localhost" nil]
   ("uname" "Darwin 12.2.0")
   ("test" "test")
@@ -182,20 +200,48 @@
   ("inline-decompress" "gzip -d"))
  (["scpc" "jtruong" "204.62.150.55" nil]
   ("uname" "Linux 2.6.32-5-amd64")
+>>>>>>> fe9e26aba89cf220c0fa8d0bac30b7bdfe3f4155
   ("test" "test")
   ("remote-path"
    ("/bin" "/usr/bin" "/usr/sbin" "/usr/local/bin"))
   ("remote-shell" "/bin/sh")
   ("busybox" nil)
+<<<<<<< HEAD
+  ("~" "/root")
+=======
   ("~" "/home/jtruong")
+>>>>>>> fe9e26aba89cf220c0fa8d0bac30b7bdfe3f4155
   ("ls" "/bin/ls --color=never")
   ("ls-dired" t)
   ("stat" "\\stat")
   ("file-exists" "test -e")
   ("id" "/usr/bin/id")
+<<<<<<< HEAD
+  ("gid-integer" 0)
+  ("perl-file-spec" t)
+  ("perl-cwd-realpath" t)
+  ("perl" "\\perl"))
+ (["sudo" "root" "204.62.150.55" nil]
+  ("uname" "Linux 2.6.32-5-amd64")
+  ("test" "test")
+  ("remote-path"
+   ("/bin" "/usr/bin" "/usr/sbin" "/usr/local/bin"))
+  ("remote-shell" "/bin/sh")
+  ("busybox" nil)
+  ("~root" "/root")
+  ("ls" "/bin/ls --color=never")
+  ("ls-dired" t)
+  ("stat" "\\stat")
+  ("file-exists" "test -e")
+  ("id" "/usr/bin/id")
+  ("gid-integer" 0)
+  ("perl-file-spec" t)
+  ("perl-cwd-realpath" t)
+=======
   ("gid-integer" 32768)
   ("perl-file-spec" t)
   ("perl-cwd-realpath" t)
+>>>>>>> fe9e26aba89cf220c0fa8d0bac30b7bdfe3f4155
   ("perl" "\\perl")
   ("readlink" "\\readlink")
   ("local-encoding" base64-encode-region)
@@ -204,6 +250,97 @@
   ("remote-decoding" "base64 -d -i")
   ("inline-compress" "gzip")
   ("inline-decompress" "gzip -d"))
+<<<<<<< HEAD
+ (["ssh" "nerdery" "204.62.150.102" nil]
+  ("uname" "Linux 2.6.18-238.12.1.el5")
+  ("test" "test")
+  ("remote-path"
+   ("/bin" "/usr/bin" "/usr/sbin" "/usr/local/bin"))
+  ("remote-shell" "/bin/sh")
+  ("busybox" nil)
+  ("~" "/home/nerdery")
+  ("file-exists" "test -e")
+  ("perl-file-spec" t)
+  ("perl-cwd-realpath" t)
+  ("perl" "\\perl")
+  ("ls" "/bin/ls --color=never")
+  ("ls-dired" t)
+  ("stat" "\\stat")
+  ("id" "/usr/bin/id")
+  ("gid-integer" 502))
+ (["ssh" "nerdery" "50.56.17.58" nil]
+  ("uname" "Linux 2.6.18-238.12.1.el5")
+  ("test" "test")
+  ("remote-path"
+   ("/bin" "/usr/bin" "/usr/sbin" "/usr/local/bin"))
+  ("remote-shell" "/bin/sh")
+  ("busybox" nil)
+  ("~" "/home/nerdery")
+  ("file-exists" "test -e")
+  ("perl-file-spec" t)
+  ("perl-cwd-realpath" t)
+  ("perl" "\\perl")
+  ("ls" "/bin/ls --color=never")
+  ("ls-dired" t)
+  ("stat" "\\stat")
+  ("id" "/usr/bin/id")
+  ("gid-integer" 502)
+  ("readlink" "\\readlink")
+  ("local-encoding" base64-encode-region)
+  ("local-decoding" base64-decode-region)
+  ("remote-encoding" "base64")
+  ("remote-decoding" "base64 -d -i")
+  ("inline-compress" "gzip")
+  ("inline-decompress" "gzip -d"))
+ (["ssh" "nerdery" "50.56.17.61" nil]
+  ("uname" "Linux 2.6.18-238.12.1.el5")
+  ("test" "test")
+  ("remote-path"
+   ("/bin" "/usr/bin" "/usr/sbin" "/usr/local/bin"))
+  ("remote-shell" "/bin/sh")
+  ("busybox" nil)
+  ("~" "/home/nerdery")
+  ("file-exists" "test -e")
+  ("perl-file-spec" t)
+  ("perl-cwd-realpath" t)
+  ("perl" "\\perl")
+  ("ls" "/bin/ls --color=never")
+  ("ls-dired" t)
+  ("stat" "\\stat")
+  ("id" "/usr/bin/id")
+  ("gid-integer" 502)
+  ("readlink" "\\readlink")
+  ("local-encoding" base64-encode-region)
+  ("local-decoding" base64-decode-region)
+  ("remote-encoding" "base64")
+  ("remote-decoding" "base64 -d -i")
+  ("inline-compress" "gzip")
+  ("inline-decompress" "gzip -d")
+  ("uid-integer" 502))
+ (["sudo" "root" "Racoon.local" nil]
+  ("uname" "Darwin 11.4.2")
+  ("test" "test")
+  ("remote-path"
+   ("/usr/bin" "/bin" "/usr/sbin" "/sbin" "/usr/local/bin"))
+  ("remote-shell" "/bin/sh")
+  ("busybox" nil)
+  ("stat" nil)
+  ("perl-file-spec" t)
+  ("perl-cwd-realpath" t)
+  ("perl" "\\perl")
+  ("id" "/usr/bin/id")
+  ("gid-integer" 0)
+  ("readlink" nil)
+  ("file-exists" "test -e")
+  ("uid-integer" 0)
+  ("ls" "/bin/ls")
+  ("local-encoding" base64-encode-region)
+  ("local-decoding" base64-decode-region)
+  ("remote-encoding" tramp-perl-encode-with-module)
+  ("remote-decoding" tramp-perl-decode-with-module)
+  ("~root" "/var/root"))
+ (["ssh" "jtruong" "204.62.150.55" nil]
+=======
  (["sudo" "root" "dhcp-23.bravo" nil]
   ("uname" "Darwin 12.2.0")
   ("test" "test")
@@ -228,6 +365,7 @@
   ("file-exists" "test -e")
   ("id" "/usr/bin/id")
   ("gid-integer" 0)
+>>>>>>> fe9e26aba89cf220c0fa8d0bac30b7bdfe3f4155
   ("uname" "Linux 2.6.32-5-amd64")
   ("remote-shell" "/bin/sh")
   ("busybox" nil)
@@ -281,13 +419,112 @@
    ("/bin" "/usr/bin" "/usr/sbin" "/usr/local/bin"))
   ("remote-shell" "/bin/sh")
   ("busybox" nil)
+  ("perl-file-spec" t)
+  ("perl-cwd-realpath" t)
+  ("perl" "\\perl")
   ("~" "/home/jtruong")
+  ("stat" "\\stat")
+  ("file-exists" "test -e")
+  ("id" "/usr/bin/id")
+  ("gid-integer" 32768)
+  ("readlink" "\\readlink")
+  ("local-encoding" base64-encode-region)
+  ("local-decoding" base64-decode-region)
+  ("remote-encoding" "base64")
+  ("remote-decoding" "base64 -d -i")
+  ("ls" "/bin/ls --color=never")
+  ("ls-dired" t)
+  ("inline-compress" "gzip")
+  ("inline-decompress" "gzip -d"))
+ (["ssh" "jdodson" "108.166.7.152" nil]
+  ("uname" "Linux 2.6.18-238.33.1.el5")
+  ("test" "test")
+  ("remote-path"
+   ("/bin" "/usr/bin" "/usr/sbin" "/usr/local/bin"))
+  ("remote-shell" "/bin/sh")
+  ("busybox" nil)
+  ("~" "/home/jdodson")
+  ("file-exists" "test -e")
+  ("perl-file-spec" t)
+  ("perl-cwd-realpath" t)
+  ("perl" "\\perl")
+  ("ls" "/bin/ls --color=never")
+  ("ls-dired" t)
+  ("stat" "\\stat")
+  ("id" "/usr/bin/id")
+  ("gid-integer" 500))
+ (["ssh" "nerdery" "50.56.17.59" nil]
+  ("uname" "Linux 2.6.18-238.12.1.el5")
+  ("test" "test")
+  ("remote-path"
+   ("/bin" "/usr/bin" "/usr/sbin" "/usr/local/bin"))
+  ("remote-shell" "/bin/sh")
+  ("busybox" nil)
+  ("~" "/home/nerdery")
+  ("file-exists" "test -e")
+  ("perl-file-spec" t)
+  ("perl-cwd-realpath" t)
+  ("perl" "\\perl")
+  ("ls" "/bin/ls --color=never")
+  ("ls-dired" t)
+  ("stat" "\\stat")
+  ("id" "/usr/bin/id")
+  ("gid-integer" 502))
+ (["su" "root" "108.166.7.152" nil]
+  ("uname" "Linux 2.6.18-238.33.1.el5")
+  ("test" "test")
+  ("remote-path"
+   ("/bin" "/usr/bin" "/usr/sbin" "/usr/local/bin"))
+  ("remote-shell" "/bin/sh")
+  ("busybox" nil)
+  ("~root" "/root")
+  ("file-exists" "test -e")
+  ("perl-file-spec" t)
+  ("perl-cwd-realpath" t)
+  ("perl" "\\perl")
+  ("ls" "/bin/ls --color=never")
+  ("ls-dired" t)
+  ("stat" "\\stat")
+  ("id" "/usr/bin/id")
+  ("gid-integer" 0))
+ (["ssh" "jtruong" "204.62.150.37" nil]
+  ("uname" "Linux 2.6.18-164.el5")
+  ("test" "test")
+  ("remote-path"
+   ("/bin" "/usr/bin" "/usr/sbin" "/usr/local/bin"))
+  ("remote-shell" "/bin/sh")
+  ("busybox" nil)
+  ("~" "/home/jtruong")
+  ("file-exists" "test -e")
+  ("perl-file-spec" t)
+  ("perl-cwd-realpath" t)
+  ("perl" "\\perl")
+  ("ls" "/bin/ls --color=never")
+  ("ls-dired" t)
+  ("stat" "\\stat")
+  ("id" "/usr/bin/id")
+  ("gid-integer" 32768)
+  ("readlink" "\\readlink")
+  ("local-encoding" base64-encode-region)
+  ("local-decoding" base64-decode-region)
+  ("remote-encoding" "base64")
+  ("remote-decoding" "base64 -d -i")
+  ("inline-compress" "gzip")
+  ("inline-decompress" "gzip -d"))
+ (["sudo" "root" "50.56.17.57" nil]
+  ("uname" "Linux 2.6.18-238.12.1.el5")
+  ("test" "test")
+  ("remote-path"
+   ("/bin" "/usr/bin" "/usr/sbin" "/usr/local/bin"))
+  ("remote-shell" "/bin/sh")
+  ("busybox" nil)
+  ("~root" "/root")
   ("ls" "/bin/ls --color=never")
   ("ls-dired" t)
   ("stat" "\\stat")
   ("file-exists" "test -e")
   ("id" "/usr/bin/id")
-  ("gid-integer" 32768)
+  ("gid-integer" 0)
   ("perl-file-spec" t)
   ("perl-cwd-realpath" t)
   ("perl" "\\perl")
@@ -295,6 +532,32 @@
   ("local-encoding" base64-encode-region)
   ("local-decoding" base64-decode-region)
   ("remote-encoding" "base64")
+  ("remote-decoding" "base64 -d -i")
+  ("inline-compress" "gzip")
+  ("inline-decompress" "gzip -d")
+  ("uid-integer" 0))
+ (["sudo" "root" "50.56.17.58" nil]
+  ("uname" "Linux 2.6.18-238.12.1.el5")
+  ("test" "test")
+  ("remote-path"
+   ("/bin" "/usr/bin" "/usr/sbin" "/usr/local/bin"))
+  ("remote-shell" "/bin/sh")
+  ("busybox" nil)
+  ("file-exists" "test -e")
+  ("perl-file-spec" t)
+  ("perl-cwd-realpath" t)
+  ("perl" "\\perl")
+  ("readlink" "\\readlink")
+  ("stat" "\\stat")
+  ("id" "/usr/bin/id")
+  ("gid-integer" 0)
+  ("local-encoding" base64-encode-region)
+  ("local-decoding" base64-decode-region)
+  ("remote-encoding" "base64")
+<<<<<<< HEAD
+  ("remote-decoding" "base64 -d -i"))
+ (["ssh" "nerdery" "50.56.17.57" nil]
+=======
   ("remote-decoding" "base64 -d -i")
   ("inline-compress" "gzip")
   ("inline-decompress" "gzip -d")
@@ -341,6 +604,7 @@
   ("id" "/usr/bin/id")
   ("gid-integer" 32768))
  (["ssh" "nerdery" "50.56.17.61" nil]
+>>>>>>> fe9e26aba89cf220c0fa8d0bac30b7bdfe3f4155
   ("uname" "Linux 2.6.18-238.12.1.el5")
   ("test" "test")
   ("remote-path"
@@ -348,6 +612,12 @@
   ("remote-shell" "/bin/sh")
   ("busybox" nil)
   ("~" "/home/nerdery")
+<<<<<<< HEAD
+  ("stat" "\\stat")
+  ("file-exists" "test -e")
+  ("id" "/usr/bin/id")
+  ("gid-integer" 502)
+=======
   ("file-exists" "test -e")
   ("perl-file-spec" t)
   ("perl-cwd-realpath" t)
@@ -431,19 +701,29 @@
   ("remote-shell" "/bin/sh")
   ("busybox" nil)
   ("file-exists" "test -e")
+>>>>>>> fe9e26aba89cf220c0fa8d0bac30b7bdfe3f4155
   ("perl-file-spec" t)
   ("perl-cwd-realpath" t)
   ("perl" "\\perl")
   ("readlink" "\\readlink")
+<<<<<<< HEAD
+=======
   ("stat" "\\stat")
   ("id" "/usr/bin/id")
   ("gid-integer" 0)
+>>>>>>> fe9e26aba89cf220c0fa8d0bac30b7bdfe3f4155
   ("local-encoding" base64-encode-region)
   ("local-decoding" base64-decode-region)
   ("remote-encoding" "base64")
   ("remote-decoding" "base64 -d -i")
   ("inline-compress" "gzip")
   ("inline-decompress" "gzip -d")
+<<<<<<< HEAD
+  ("uid-integer" 502)
+  ("ls" "/bin/ls --color=never"))
+ (["ssh" "root" "108.166.7.154" nil]
+  ("uname" "Linux 3.0.0-23-virtual")
+=======
   ("uid-integer" 0)
   ("ls" "/bin/ls --color=never"))
  (["sudo" "root" "50.56.17.58" nil]
@@ -513,11 +793,15 @@
   ("inline-decompress" "gzip -d"))
  (["scpc" "nerdery" "50.56.17.58" nil]
   ("uname" "Linux 2.6.18-238.12.1.el5")
+>>>>>>> fe9e26aba89cf220c0fa8d0bac30b7bdfe3f4155
   ("test" "test")
   ("remote-path"
    ("/bin" "/usr/bin" "/usr/sbin" "/usr/local/bin"))
   ("remote-shell" "/bin/sh")
   ("busybox" nil)
+<<<<<<< HEAD
+  ("~" "/root"))
+=======
   ("stat" "\\stat")
   ("file-exists" "test -e")
   ("id" "/usr/bin/id")
@@ -550,6 +834,7 @@
   ("ls" "/bin/ls --color=never")
   ("uid-integer" 502)
   ("ls-dired" t))
+>>>>>>> fe9e26aba89cf220c0fa8d0bac30b7bdfe3f4155
  (["ssh" "jtruong" "athens.sierrabravo.net" nil]
   ("uname" "Linux 2.6.32-5-amd64")
   ("test" "test")
@@ -563,6 +848,9 @@
   ("gid-integer" 32768)
   ("perl-file-spec" t)
   ("perl-cwd-realpath" t)
+<<<<<<< HEAD
+  ("perl" "\\perl")))
+=======
   ("perl" "\\perl")
   ("readlink" "\\readlink")
   ("local-encoding" base64-encode-region)
@@ -658,3 +946,4 @@
   ("remote-decoding" "base64 -d -i")
   ("inline-compress" "gzip")
   ("inline-decompress" "gzip -d")))
+>>>>>>> fe9e26aba89cf220c0fa8d0bac30b7bdfe3f4155

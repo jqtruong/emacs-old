@@ -35,6 +35,9 @@
  ;; If there is more than one, they won't work right.
  )
 
+;; Dired - open new directory in same buffer with `a'
+(put 'dired-find-alternate-file 'disabled nil)
+
 ;; Fill in tabs with spaces.
 (setq-default indent-tabs-mode nil)
 
@@ -73,16 +76,15 @@
 
 (set-frame-size-according-to-resolution)
 
-(set-default 'tramp-default-proxies-alist (quote (("50\\.56\\.17\\.[0-9]+" "\\`root\\'" "/ssh:nerdery@%h:")
-                                                  ("108\\.166\\.7\\.152" "\\`root\\'" "/ssh:jdodson@%h:")
-                                                  ((regexp-quote (system-name)) nil nil))))
+(set-default 'tramp-default-proxies-alist (quote (("50\\.56\\.17\\.*" "\\`root\\'" "/ssh:nerdery@%h:")
+                                                  ("204\\.62\\.150\\.55" "\\`root\\'" "/ssh:jtruong@%h:")
+                                                  ("108\\.166\\.7\\.152" "\\`root\\'" "/ssh:jdodson@%h:"))))
 
 (defun what-face (pos)
   (interactive "d")
   (let ((face (or (get-char-property (point) 'read-face-name)
                   (get-char-property (point) 'face))))
     (if face (message "Face: %s" face) (message "No face at %d" pos))))
-
 
 ;;;;;;;;;;;;;;
 ;; uniquify ;;
@@ -163,6 +165,9 @@
      (define-key paredit-mode-map [?\)] 'paredit-close-parenthesis)
      (define-key paredit-mode-map [(meta ?\))]
        'paredit-close-parenthesis-and-newline)))
+
+;; Quicklisp helper
+(load (expand-file-name "~/quicklisp/slime-helper.el"))
 
 ;; SBCL
 (setq slime-lisp-implementations
@@ -461,6 +466,11 @@ Optional SEPARATOR to concatenate the collected lines and return a string."
     (if in-seconds-p
         (insert (format "%s" seconds))
       (insert (jqt/convert-from-unix-timestamp seconds t)))))
+
+(defun jqt/insert-seconds-from-date (date)
+  ""
+  (interactive "sDate: ")
+  (insert (format-seconds "%s" (time-to-seconds (date-to-time date)))))
 
 (defun jqt/trim-string (string)
   ""
@@ -1000,5 +1010,3 @@ nil - at point
   ;; Display buffer in window directly top right of the ibuffer.
   (define-key ibuffer-mode-map "o" 'ide/ibuffer-visit-buffer-other-window)
   (global-set-key (kbd "C-x 1") 'ide/resize-windows))
-
-(put 'dired-find-alternate-file 'disabled nil)
