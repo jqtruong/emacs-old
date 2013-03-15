@@ -89,10 +89,19 @@
 ;;;;;;;;;;;;;;
 ;; uniquify ;;
 ;;;;;;;;;;;;;;
+
 (require 'uniquify) 
 (setq 
  uniquify-buffer-name-style 'post-forward
  uniquify-separator ":")
+
+;;;;;;;;;
+;; web ;;
+;;;;;;;;;
+
+(require 'web-mode)
+(set-face-attribute 'web-mode-html-tag-face nil :foreground "blue")
+(set-face-attribute 'web-mode-html-attr-name-face nil :foreground "green3")
 
 ;;;;;;;;;;
 ;; mail ;;
@@ -167,7 +176,7 @@
        'paredit-close-parenthesis-and-newline)))
 
 ;; Quicklisp helper
-(load (expand-file-name "~/quicklisp/slime-helper.el"))
+;; (load (expand-file-name "~/quicklisp/slime-helper.el"))
 
 ;; SBCL
 (setq slime-lisp-implementations
