@@ -133,6 +133,14 @@
  uniquify-buffer-name-style 'post-forward
  uniquify-separator ":")
 
+;;;;;;;;;
+;; web ;;
+;;;;;;;;;
+
+(require 'web-mode)
+(set-face-attribute 'web-mode-html-tag-face nil :foreground "blue")
+(set-face-attribute 'web-mode-html-attr-name-face nil :foreground "green3")
+
 ;;;;;;;;;;
 ;; mail ;;
 ;;;;;;;;;;
