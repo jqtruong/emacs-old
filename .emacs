@@ -15,6 +15,7 @@
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
 
 ;; Modes
+(require 'web-mode)
 (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
 (add-to-list 'auto-mode-alist '("\\.html$" . web-mode))
 
@@ -86,9 +87,47 @@
                   (get-char-property (point) 'face))))
     (if face (message "Face: %s" face) (message "No face at %d" pos))))
 
+;;;;;;;;;;;;;;;;;;;
+;; Groovy Grails ;;
+;;;;;;;;;;;;;;;;;;;
+
+(require 'grails-mode)
+(require 'project-mode)
+(setq grails-mode t)
+(setq project-mode t)
+;; Use whatever mode you want for views.
+(add-to-list 'auto-mode-alist '("\.gsp$" . nxml-mode))
+;; Loads all saved projects. Recommended, but not required.
+(project-load-all)
+
+(autoload 'groovy-eval "groovy-eval" "Groovy Evaluation" t)
+(add-hook 'groovy-mode-hook 'groovy-eval)
+
+(require 'emacs-grails-mode-ext)
+(autoload 'groovy-mode "groovy-mode" "Mode for editing Groovy source files")
+(autoload 'nxml-mode "nxml-mode" "Mode for editing GSP pages")
+
+(add-to-list 'auto-mode-alist '("\.gsp$" . nxml-mode)) 
+(add-to-list 'auto-mode-alist '("\.groovy$" . groovy-mode)) 
+(add-to-list 'auto-mode-alist '("\.gradle$" . groovy-mode))
+
+(defun grails-comint-magic (string)
+  "Handle grails output gracefully."
+  (let ((position (process-mark (get-buffer-process (current-buffer)))))
+    (save-excursion
+      (goto-char comint-last-output-start)
+      (while (re-search-forward "\033\\[1A\033\\[[0-9]+D\033\\[0K" position t)
+        (replace-match "" t t)
+        (previous-line)
+        (delete-region
+         (line-beginning-position)
+         (progn (forward-line 1) (point)))))))
+(add-hook 'comint-output-filter-functions 'grails-comint-magic)
+
 ;;;;;;;;;;;;;;
 ;; uniquify ;;
 ;;;;;;;;;;;;;;
+
 (require 'uniquify) 
 (setq 
  uniquify-buffer-name-style 'post-forward
@@ -99,6 +138,13 @@
 ;;;;;;;;;;
 
 (setq starttls-use-gnutls t)
+
+;;;;;;;;;;;;;;
+;; web-mode ;;
+;;;;;;;;;;;;;;
+
+(set-face-attribute 'web-mode-html-tag-face nil :foreground "blue")
+(set-face-attribute 'web-mode-html-attr-name-face nil :foreground "purple3")
 
 ;;;;;;;;
 ;; nX ;;
@@ -167,7 +213,7 @@
        'paredit-close-parenthesis-and-newline)))
 
 ;; Quicklisp helper
-(load (expand-file-name "~/quicklisp/slime-helper.el"))
+;; (load (expand-file-name "~/quicklisp/slime-helper.el"))
 
 ;; SBCL
 (setq slime-lisp-implementations
