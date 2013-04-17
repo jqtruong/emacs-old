@@ -1,4 +1,4 @@
-;; -*- emacs-lisp -*- <13/03/12 07:52:20 /Users/jerometruong/.emacs.d/tramp>
+;; -*- emacs-lisp -*- <13/04/12 10:30:03 /Users/jtruong/.emacs.d/tramp>
 ;; Tramp connection history.  Don't change this file.
 ;; You can delete it, forcing Tramp to reapply the checks.
 
@@ -24,8 +24,6 @@
   ("remote-decoding" "base64 -d -i")
   ("inline-compress" "gzip")
   ("inline-decompress" "gzip -d"))
- (["scpc" "nerdery" "nil" nil]
-  nil)
  (["scpc" "nerdery" "50.56.17.58" nil]
   ("uname" "Linux 2.6.18-238.12.1.el5")
   ("test" "test")
@@ -47,4 +45,22 @@
   ("remote-encoding" "base64")
   ("remote-decoding" "base64 -d -i")
   ("inline-compress" "gzip")
-  ("inline-decompress" "gzip -d")))
+  ("inline-decompress" "gzip -d"))
+ (["sudo" "root" "Jerome-Truongs-MacBook-Pro.local" nil nil]
+  ("uname" "Darwin 12.3.0")
+  ("test" "test")
+  ("remote-path"
+   ("/usr/bin" "/bin" "/usr/sbin" "/sbin" "/usr/local/bin"))
+  ("remote-shell" "/bin/sh")
+  ("busybox" nil)
+  ("file-exists" "test -e")
+  ("readlink" nil)
+  ("perl-file-spec" t)
+  ("perl-cwd-realpath" t)
+  ("perl" "\\perl")
+  ("stat" nil)
+  ("ls" "/bin/ls")
+  ("id" "/usr/bin/id")
+  ("uid-integer" 0)
+  ("gid-integer" 0)
+  ("~root" "/var/root")))
