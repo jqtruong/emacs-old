@@ -4,7 +4,6 @@
 
 (add-to-list 'load-path "~/.emacs.d/lisp")
 (add-to-list 'load-path "~/.emacs.d/mypa")
-(require 'my-setup)
 
 (require 'package)
 (package-initialize)
@@ -14,27 +13,54 @@
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
 
+(require 'my-setup)
+
 ;; Modes
-(require 'web-mode)
-(add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
-(add-to-list 'auto-mode-alist '("\\.html$" . web-mode))
+
+;; (set-frame-position (selected-frame) )
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-color-names-vector ["#2e3436" "#a40000" "#4e9a06" "#c4a000" "#204a87" "#5c3566" "#729fcf" "#eeeeec"])
  '(auth-source-save-behavior nil)
+ '(c-tab-always-indent (quote other))
+ '(custom-enabled-themes (quote (solarized-dark)))
+ '(custom-safe-themes (quote ("1e7e097ec8cb1f8c3a912d7e1e0331caeed49fef6cff220be63bd2a6ba4cc365" "fc5fcb6f1f1c1bc01305694c59a1a861b008c534cae8d0e48e4d5e81ad718bc6" default)))
+ '(default-frame-alist (quote ((height . 32) (width . 120))))
+ '(eshell-hist-rebind-keys-alist (quote (([(control 112)] . eshell-previous-input) ([(control 110)] . eshell-next-input) ([(control up)] . eshell-previous-input) ([(control down)] . eshell-next-input) ([(control 114)] . eshell-isearch-backward) ([(control 115)] . eshell-isearch-forward) ([(meta 114)] . eshell-previous-matching-input) ([(meta 115)] . eshell-next-matching-input) ([(meta 112)] . eshell-previous-matching-input-from-input) ([(meta 110)] . eshell-next-matching-input-from-input) ([up] . eshell-previous-matching-input-from-input) ([down] . eshell-next-matching-input-from-input))))
+ '(eshell-output-filter-functions (quote (grails-eshell-magic eshell-handle-ansi-color eshell-handle-control-codes eshell-watch-for-password-prompt eshell-postoutput-scroll-to-bottom eshell-handle-control-codes eshell-handle-ansi-color eshell-watch-for-password-prompt)))
+ '(eshell-prompt-regexp "^[^#$
+]* ?[#$] ")
+ '(eshell-skip-prompt-function (quote jqt/eshell-skip-prompt))
+ '(fill-column 70)
+ '(grep-files-aliases (quote (("all" . "* .*") ("el" . "*.el") ("ch" . "*.[ch]") ("c" . "*.c") ("cc" . "*.cc *.cxx *.cpp *.C *.CC *.c++") ("cchh" . "*.cc *.[ch]xx *.[ch]pp *.[CHh] *.CC *.HH *.[ch]++") ("hh" . "*.hxx *.hpp *.[Hh] *.HH *.h++") ("h" . "*.h") ("l" . "[Cc]hange[Ll]og*") ("m" . "[Mm]akefile*") ("tex" . "*.tex") ("texi" . "*.texi") ("asm" . "*.[sS]") ("groovy" . "*.groovy *.gsp"))))
+ '(magit-repo-dirs (quote ("~/git/")))
+ '(magit-status-buffer-switch-function (quote switch-to-buffer))
+ '(multi-eshell-name "*eshell*")
+ '(multi-eshell-shell-function (quote (eshell)))
+ '(next-screen-context-lines 5)
+ '(nxml-attribute-indent 8)
+ '(nxml-child-indent 4)
  '(org-agenda-files nil)
+ '(org-use-sub-superscripts (quote {}))
+ '(repository-root-matchers (quote (repository-root-matcher/git)))
  '(send-mail-function (quote smtpmail-send-it))
  '(smtpmail-smtp-server "smtp.gmail.com")
- '(smtpmail-smtp-service 587))
+ '(smtpmail-smtp-service 587)
+ '(visible-bell t)
+ '(web-mode-css-indent-offset 4)
+ '(web-mode-markup-indent-offset 4))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(linum-highlight-face ((t (:inherit default :background "Black" :foreground "Orange"))))
+ '(match ((t (:foreground "white" :weight bold))))
+ '(mode-line ((t (:background "#0a2832" :foreground "Orange" :inverse-video t :box nil :underline nil :slant normal :weight normal)))))
 
 ;; Dired - open new directory in same buffer with `a'
 (put 'dired-find-alternate-file 'disabled nil)
@@ -47,35 +73,14 @@
 
 (put 'downcase-region 'disabled nil)
 
-;; Update path
-(setq exec-path (append exec-path '("/usr/local/bin/")))
+;; Show column number
+(setq column-number-mode t)
 
 ;; Create shorter aliases for ack-and-a-half
 (defalias 'ack 'ack-and-a-half)
 (defalias 'ack-same 'ack-and-a-half-same)
 (defalias 'ack-find-file 'ack-and-a-half-find-file)
 (defalias 'ack-find-file-same 'ack-and-a-half-find-file-same)
-
-;; Set frame.
-(defun set-frame-size-according-to-resolution ()
-  (interactive)
-  (if window-system
-      (progn
-        ;; use 120 char wide window for largeish displays
-        ;; and smaller 80 column windows for smaller displays
-        ;; pick whatever numbers make sense for you
-        (if (> (x-display-pixel-width) 1280)
-            (add-to-list 'default-frame-alist (cons 'width 120))
-          (add-to-list 'default-frame-alist (cons 'width 80)))
-        ;; for the height, subtract a couple hundred pixels
-        ;; from the screen height (for panels, menubars and
-        ;; whatnot), then divide by the height of a char to
-        ;; get the height we want
-        (add-to-list 'default-frame-alist
-                     (cons 'height (/ (- (x-display-pixel-height) 200)
-                                      (frame-char-height)))))))
-
-(set-frame-size-according-to-resolution)
 
 (set-default 'tramp-default-proxies-alist (quote (("50\\.56\\.17\\.*" "\\`root\\'" "/ssh:nerdery@%h:")
                                                   ("204\\.62\\.150\\.55" "\\`root\\'" "/ssh:jtruong@%h:")
@@ -87,42 +92,11 @@
                   (get-char-property (point) 'face))))
     (if face (message "Face: %s" face) (message "No face at %d" pos))))
 
-;;;;;;;;;;;;;;;;;;;
-;; Groovy Grails ;;
-;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;
+;; gtags ;;
+;;;;;;;;;;;
 
-(require 'grails-mode)
-(require 'project-mode)
-(setq grails-mode t)
-(setq project-mode t)
-;; Use whatever mode you want for views.
-(add-to-list 'auto-mode-alist '("\.gsp$" . nxml-mode))
-;; Loads all saved projects. Recommended, but not required.
-(project-load-all)
-
-(autoload 'groovy-eval "groovy-eval" "Groovy Evaluation" t)
-(add-hook 'groovy-mode-hook 'groovy-eval)
-
-(require 'emacs-grails-mode-ext)
-(autoload 'groovy-mode "groovy-mode" "Mode for editing Groovy source files")
-(autoload 'nxml-mode "nxml-mode" "Mode for editing GSP pages")
-
-(add-to-list 'auto-mode-alist '("\.gsp$" . nxml-mode)) 
-(add-to-list 'auto-mode-alist '("\.groovy$" . groovy-mode)) 
-(add-to-list 'auto-mode-alist '("\.gradle$" . groovy-mode))
-
-(defun grails-comint-magic (string)
-  "Handle grails output gracefully."
-  (let ((position (process-mark (get-buffer-process (current-buffer)))))
-    (save-excursion
-      (goto-char comint-last-output-start)
-      (while (re-search-forward "\033\\[1A\033\\[[0-9]+D\033\\[0K" position t)
-        (replace-match "" t t)
-        (previous-line)
-        (delete-region
-         (line-beginning-position)
-         (progn (forward-line 1) (point)))))))
-(add-hook 'comint-output-filter-functions 'grails-comint-magic)
+(autoload 'gtags-mode "gtags" "Gtags minor mode." t)
 
 ;;;;;;;;;;;;;;
 ;; uniquify ;;
@@ -184,7 +158,7 @@
 (define-key global-map "\C-ca" 'org-agenda)
 (setq org-log-done t)
 
-(setq org-agenda-files (list "~/Work/Nerdery/Nerdery.org"))
+;; (setq org-agenda-files '(nil))
 
 ;; active Babel languages
 (org-babel-do-load-languages
@@ -236,19 +210,28 @@
 ;;;;;;;;;;;;;;;;;;;
 
 (setq ibuffer-saved-filter-groups
-        '(("ide"
-           ("dired" (mode . dired-mode))
-           ("Drupal" (filename . "drupal"))
-           ("php" (filename . "\\.php$\\|\\.inc$"))
-           ("html" (filename . "\\.\\(p\\)?html$\\|\\.tpl$"))
-           ("css" (filename . "\\.css"))
-           ("js" (filename . "\\.js\\(on\\)?"))
-           ("iOS" (filename . "iOS"))
-           ("emacs" (name . "^\\*.\*\\*$"))
-           ("Org" (name . "\\.org$")))))
+      '(("default"
+         ("dired" (mode . dired-mode))
+         ("Drupal" (filename . "drupal"))
+         ("php" (filename . "\\.php$\\|\\.inc$"))
+         ("html" (filename . "\\.\\(p\\)?html$\\|\\.tpl$"))
+         ("css" (filename . "\\.css"))
+         ("js" (filename . "\\.js\\(on\\)?"))
+         ("iOS" (filename . "iOS"))
+         ("emacs" (or
+                   (name . "^\\*scratch\\*$")
+                   (name . "^\\*Messages\\*$")))
+         ("elisp" (mode . emacs-lisp-mode))
+         ("Org" (name . "\\.org$"))
+         ("shells" (name . "\\*eshell\\*"))
+         ("magit" (name . "^\\*magit\\(: \\|-\\).*\\*$"))
+         ("webapp_bloomhealth" (filename . "git/webapp_bloomhealth"))
+         ("bloomhealth" (filename . "git/bloomhealth"))
+         ("lib_domain" (filename . "git/lib_domain")))))
 
 (add-hook 'ibuffer-mode-hook '(lambda ()
                                 (ibuffer-auto-mode 1)
+                                (ibuffer-switch-to-saved-filter-groups "default")
                                 (when (bound-and-true-p ide-mode-p)
                                   (set-window-parameter (selected-window) 'no-other-window t))))
 
@@ -271,7 +254,8 @@
         (mark " " (name 16 -1) " " filename)
         (mark modified read-only " "
               (name 18 18 :left elide)
-              filename)))
+              filename)
+        (mark modified read-only " " name)))
 
 (setq ibuffer-show-empty-filter-groups nil)
 
@@ -294,25 +278,6 @@
 ;; My stuff ;;
 ;;;;;;;;;;;;;;
 
-(defun jqt/convert-db-obj-to-sql (start end)
-  "Convert php query objects into a sql string.  E.g.:
-
-$assoc_module = $this->EE->db
-                ->select('ct.url_title, ct.entry_id, ud.title, ud.field_id_'.$this->cad_module_display_title_field_id.' AS navigation_title, ud.field_id_'.$this->cad_module_disable_zip_field_id.' AS disable_module_zip')
-                ->from('channel_titles AS ct')
-                ->join('uhura_data AS ud', 'ct.entry_id = ud.entry_id')
-                ->where('ud.status', 'open')
-                ->where('ud.lang_id', $this->lang_id)
-                ->where('ct.entry_id', $assoc_module_id)
-                ->limit(1)
-                ->get()
-                ->row();
-
-would return
-SELECT ct.url_title, ct.entry_id, ud.title, ud.field_id_%1 AS navigation_title, ud.field_id_%2 AS disable_module_zip...
-"
-  (interactive "r"))
-
 (defun ide ()
   ""
   (interactive)
@@ -325,12 +290,12 @@ SELECT ct.url_title, ct.entry_id, ud.title, ud.field_id_%1 AS navigation_title, 
   (dired "." "-aogh")
   (rename-buffer ";base")
   ;; Open a terminal.
-  ;; (term "/bin/bash")
-  ;; (rename-buffer ";term")
+  ;; (ansi-term "bash" "term: main")
   ;; Open a shell.
-  (shell)
-  (rename-buffer ";shell")
+  ;; (shell ";shell")
   ;; Create small side window.
+  ;; Eshell is the new hotness
+  (eshell)
   (split-window (selected-window) 50 0)
   ;; Open and set up ibuffer.
   (ibuffer)
@@ -386,7 +351,7 @@ SELECT ct.url_title, ct.entry_id, ud.title, ud.field_id_%1 AS navigation_title, 
   (interactive)
   ;; (other-window 1)
   ;; Since i'm using multiple windows now for other things, i need to specify the window's coords.
-  (select-window (window-at 0 0))
+  ;; (select-window (window-at 0 0))
   (ibuffer))
 
 ;; Copied from somewhere on the web.
@@ -970,6 +935,22 @@ nil - at point
     (let ((path (split-string (buffer-file-name) "/")))
       (rename-buffer (format "%s.org" (car (last path 2)))))))
 
+(defun ido-find-file-in-tag-files (&optional next-table)
+  (interactive "P")
+  (save-excursion
+    (let ((enable-recursive-minibuffers t))
+      ;; Problem with next-table, or t, is that it doesn't cycle
+      ;; through the list of tables, instead just picks the next one.
+      ;; So it will only temporarily use the next table in the list
+      ;; which is not very useful with more than 2 tables.
+      ;; Ideally, i'd like to specify which tags buffer to use, which
+      ;; could be implemented instead of using visit-tags-table-buffer.
+      (visit-tags-table-buffer (if next-table t)))
+    (find-file
+     (expand-file-name
+      (ido-completing-read
+       "Project file: " (tags-table-files) nil t)))))
+
 ;;;;;;;;;;;;;
 ;; c stuff ;;
 ;;;;;;;;;;;;;
@@ -990,21 +971,6 @@ nil - at point
   ;; sets fn-delete to be right-delete
   (global-set-key [kp-delete] 'delete-char))
 
-;; Emacs modified
-(global-set-key (kbd "M-r") 'replace-string)
-(global-set-key (kbd "C-s") 'isearch-forward-regexp)
-(global-set-key (kbd "C-r") 'isearch-backward-regexp)
-(global-set-key (kbd "C-S-n") (lambda () (interactive) (jqt/scroll-up-a-bit 3)))
-(global-set-key (kbd "C-S-p") (lambda () (interactive) (jqt/scroll-down-a-bit 3)))
-(global-set-key (kbd "C-S-s") (lambda (name) (interactive "sName: ") (shell (concat ";shell " name))))
-(global-set-key (kbd "C-S-t") (lambda (name) (interactive "sName: ") (term "/bin/bash") (rename-buffer (concat ";term " name))))
-(global-set-key (kbd "C-S-x o") (lambda () (interactive) (other-frame 1)))
-(global-set-key (kbd "C-e") 'end-of-visual-line)
-;; Quick other window/buffer shortcuts
-(global-set-key (kbd "C-S-f") (lambda () (interactive) (other-window 1)))
-(global-set-key (kbd "C-S-b") (lambda () (interactive) (other-window -1)))
-(global-set-key (kbd "C-S-l") 'jqt/last-buffer)
-
 ;;;;;;;;;;;;;;;;
 ;; Custom all ;;
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -1015,18 +981,7 @@ nil - at point
 ;; - ; for shells   ;;
 ;; - " for dired    ;;
 ;;;;;;;;;;;;;;;;;;;;;;
-(global-set-key (kbd "C-x C-b")  'jqt/buffer-list)
-(global-set-key (kbd "C-< b")    'c/insert-buffer-name)
-(global-set-key (kbd "C-c u")    'uncomment-region)
-(global-set-key (kbd "M-Y")      'yank-pop-forwards)
-(global-set-key (kbd "C-< t")    'jqt/insert-current-date-time)
-(global-set-key (kbd "C-< s")    'jqt/insert-seconds-from-date)
-(global-set-key (kbd "C-; r")    'jqt/reconnect-shell)
-(global-set-key (kbd "C-; m d")  'mysql/desc-table)
-(global-set-key (kbd "C-> t")    'jqt/convert-from-unix-timestamp)
-(global-set-key (kbd "C-> p")    'jqt/point)
-(global-set-key (kbd "C-\" o a") 'jqt/dired-athens)
-(global-set-key (kbd "C-, r")    'rename-buffer)
+
 
 ;; Custom PHP
 (defun php/define-keys ()
@@ -1063,4 +1018,4 @@ nil - at point
   (message "Defining keys for ide.")
   ;; Display buffer in window directly top right of the ibuffer.
   (define-key ibuffer-mode-map "o" 'ide/ibuffer-visit-buffer-other-window)
-  (global-set-key (kbd "C-x 1") 'ide/resize-windows))
+  (global-set-key (kbd "C-S-x 1") 'ide/resize-windows))

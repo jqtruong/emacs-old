@@ -1,0 +1,128 @@
+alias bgrep grep --include *.groovy --include *.gsp -rE \$1 .
+bgrep disclaimer
+cd -
+*cd -
+which ctags
+cd
+which find
+which *find
+*find git/webapp_bloomhealth/bloomhealth -name *.groovy -o -name *.gsp
+cd git
+ls
+magit-status dev_scripts/
+man ctags
+cd =
+cd -7
+./bin/loadSanitize.sh
+bgrep disclaimer
+alias bgrep grep --include *.properties --include *.groovy --include *.gsp --exclude *test* -rE $1 .
+bgrep disclaimer
+alias bgrep grep --include *.properties --include *.groovy --include *.gsp --exclude *test* -rE \$1 .
+bgrep disclaimer
+alias bgrep grep --include *.properties --include *.groovy --include *.gsp --exclude *test* -rE \$1 .
+alias bgrep grep --include \*.properties --include \*.groovy --include \*.gsp --exclude *test* -rE \$1 .
+bgrep disclaimer
+alias bgrep grep --include \*.properties --include \*.groovy --include \*.gsp --exclude \*test\* -rE \$1 .
+bgrep disclaimer
+man grep
+alias bgrep grep \$1 -rE --include=\*.{properties,groovy,gsp} --exclude=\*test\* .
+bgrep disclaimer
+alias bgrep *grep \$1 -rE --include=\*.{properties,groovy,gsp} --exclude=\*test\* .
+bgrep disclaimer
+alias bgrep \*grep \$1 -rE --include=\*.{properties,groovy,gsp} --exclude=\*test\* .
+bgrep disclaimer
+alias bgrep grep \$1 -rE --include=\*.{properties,groovy,gsp} --exclude=\*test\* .
+bgrep disclaimer
+alias bgrep grep \$1 -rE --include=\*.\{properties,groovy,gsp\} --exclude=\*test\* .
+bgrep disclaimer
+alias bgrep grep --include=\*.\{properties,groovy,gsp\} --exclude=\*test\* -rE \$1 .
+bgrep disclaimer
+alias bgrep grep --include=\*.{properties,groovy,gsp} --exclude=\*test\* -rE \$1 .
+bgrep disclaimer
+alias bgrep grep --include\=\*.{properties,groovy,gsp} --exclude=\*test\* -rE \$1 .
+bgrep disclaimer
+alias bgrep grep --include=\*.properties --exclude=\*test\* -rE \$1 .
+bgrep disclaimer
+alias bgrep grep --include=\*.properties --include=\*.groovy --include=\*.gsp --exclude=\*test\* -rE \$1 .
+bgrep disclaimer
+alias bgrep grep --include=\*.\\{properties,groovy,gsp\\} --exclude=\*test\* -rE \$1 .
+bgrep disclaimer
+alias bgrep grep --include=\*.{properties\,groovy\,gsp} --exclude=\*test\* -rE \$1 .
+bgrep disclaimer
+alias bgrep grep --include=\*\.{properties,groovy,gsp} --exclude=\*test\* -rE \$1 .
+bgrep disclaimer
+alias bgrep grep --include="*.{properties,groovy,gsp}" --exclude=\*test\* -rE \$1 .
+bgrep disclaimer
+alias bgrep grep --include="\*.{properties,groovy,gsp}" --exclude=\*test\* -rE \$1 .
+bgrep disclaimer
+alias bgrep grep --include=\*.properties --include=\*.groovy --include=\*.gsp --exclude=\*test\* -rE \$1 .
+*bloom-etags
+which bloom-etags
+cd
+cd .grails
+ls
+cd 2.2.1/
+ls
+ls -l
+cd projects/
+ls
+cd bloomhealth/
+ls
+cd ..
+df -u
+du -s
+df
+df -h
+cd ../..
+ls
+ls -l
+cd ivy-cache/
+ls
+cd ..
+cd 2.2.1/
+ls -a
+ls
+rm -rf projects/
+cd =
+cd -7
+./bin/loadSanitize.sh
+echo $JAVAHOME
+echo $JAVA_HOME
+cd ../../bloomhealth/
+clean-bloomhealth 
+clean-bloomhealth-and-publish
+clean-bloomhealth-and-publish
+clean-domain
+clean-bloomhealth-and-publish 
+clean-domain 
+cd ../lib_paymentSchedule/
+cd ../lib_domain/
+clean-domain
+cd
+alias test print
+test 1
+test "hello"
+alias test print \$1
+test hello
+alias test
+alias grails-test-integration-spock grails -Duser.timezone=UTC test-app integration:spock \$1
+cd =
+cd -3
+grails run-app
+grails run-app
+git
+git --version
+which git
+brew info git
+cd -
+cd git
+cd -1
+brew info gnutls
+brew install gnutls
+which gnutls
+brew info gnutls
+ls -a | grep git
+ls -a ../ | grep git
+cpu
+*find . -name bloom.properties
+./grails-app/i18n/bloom.properties

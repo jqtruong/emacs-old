@@ -1,0 +1,21 @@
+alias rebuild-bloomhealth-qeux cd /Users/jtruong/git/bloomhealth; print-pretty-pwd; gradle clean build publishToMavenLocal -Psnapshot=true -Pfeature=qeux
+alias grails-test-unit-spock grails test-app -Duser.timezone=UTC unit:spock
+alias grails-test-unit grails test-app -Duser.timezone=UTC unit:
+alias grails-test-integration grails test-app -Duser.timezone=UTC integration:
+alias clean-bloomhealth cd /Users/jtruong/git/bloomhealth; gradle-clean-build
+alias gradle-clean-build gradle clean build
+alias ll ls -l
+alias bloom cd /Users/jtruong/Bloom
+alias gradle-clean-build-install gradle clean build install
+alias grails-clean-package-maven-install grails clean; grails package; grails maven-install
+alias grails-clean-package-run-app grails clean; grails package; grails run-app
+alias bgrep grep --include=*.properties --include=*.groovy --include=*.gsp --exclude=*test* -rE $1 .
+alias print-pretty-pwd printf \n-----\n\n; pwd; printf \n
+alias clean-common cd /Users/jtruong/git/lib_common; print-pretty-pwd; gradle-clean-build-install; cd -
+alias clean-payment cd /Users/jtruong/git/lib_paymentSchedule; print-pretty-pwd; gradle-clean-build-install; cd -
+alias clean-domain cd /Users/jtruong/git/lib_domain; print-pretty-pwd; grails-clean-package-maven-install; cd -
+alias clean-webapp-bloom-and-run cd /Users/jtruong/git/webapp_bloomhealth/bloomhealth; print-pretty-pwd; grails-clean-package-run-app
+alias clean-bloomhealth-and-publish cd /Users/jtruong/git/bloomhealth; print-pretty-pwd; gradle clean build publishToMavenLocal
+alias grails-clean-package grails clean; grails package
+alias grails-test-integration-spock grails -Duser.timezone=UTC test-app integration:spock $1
+alias run-bloom cd /Users/jtruong/git/webapp_bloomhealth/bloomhealth; print-pretty-pwd; grails run-app
