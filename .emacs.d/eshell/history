@@ -1,28 +1,3 @@
-alias bgrep grep --include *.groovy --include *.gsp -rE \$1 .
-bgrep disclaimer
-cd -
-*cd -
-which ctags
-cd
-which find
-which *find
-*find git/webapp_bloomhealth/bloomhealth -name *.groovy -o -name *.gsp
-cd git
-ls
-magit-status dev_scripts/
-man ctags
-cd =
-cd -7
-./bin/loadSanitize.sh
-bgrep disclaimer
-alias bgrep grep --include *.properties --include *.groovy --include *.gsp --exclude *test* -rE $1 .
-bgrep disclaimer
-alias bgrep grep --include *.properties --include *.groovy --include *.gsp --exclude *test* -rE \$1 .
-bgrep disclaimer
-alias bgrep grep --include *.properties --include *.groovy --include *.gsp --exclude *test* -rE \$1 .
-alias bgrep grep --include \*.properties --include \*.groovy --include \*.gsp --exclude *test* -rE \$1 .
-bgrep disclaimer
-alias bgrep grep --include \*.properties --include \*.groovy --include \*.gsp --exclude \*test\* -rE \$1 .
 bgrep disclaimer
 man grep
 alias bgrep grep \$1 -rE --include=\*.{properties,groovy,gsp} --exclude=\*test\* .
@@ -126,3 +101,28 @@ ls -a ../ | grep git
 cpu
 *find . -name bloom.properties
 ./grails-app/i18n/bloom.properties
+ls -ltr
+ls -ltr
+ls -ltr
+ls -ltr
+ls -ltr
+ps -ef | grep mysqldump
+*ps -ef | grep mysqldump
+*ps -ef; grep mysqldump
+ls -ltr
+ls -ltr
+ls -ltr
+ls -ltr
+cd .grails
+ls -l
+ls -l
+cd =
+cd -1
+cd grails-app/
+ls
+cd controllers/
+ls
+cd
+cd git
+magit-status bootstrap-datepicker
+alias rebuild-bloomhealth-qeux cd /Users/jtruong/git/bloomhealth\; print-pretty-pwd\; gradle clean build publishToMavenLocal -Psnapshot=true -Pfeature=qeux

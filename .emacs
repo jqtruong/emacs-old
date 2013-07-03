@@ -44,7 +44,7 @@
  '(next-screen-context-lines 5)
  '(nxml-attribute-indent 8)
  '(nxml-child-indent 4)
- '(org-agenda-files nil)
+ '(org-agenda-files (quote ("~/Bloom/.org")))
  '(org-use-sub-superscripts (quote {}))
  '(repository-root-matchers (quote (repository-root-matcher/git)))
  '(send-mail-function (quote smtpmail-send-it))
@@ -1019,3 +1019,4 @@ nil - at point
   ;; Display buffer in window directly top right of the ibuffer.
   (define-key ibuffer-mode-map "o" 'ide/ibuffer-visit-buffer-other-window)
   (global-set-key (kbd "C-S-x 1") 'ide/resize-windows))
+(put 'narrow-to-region 'disabled nil)

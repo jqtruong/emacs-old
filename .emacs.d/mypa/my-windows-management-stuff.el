@@ -1,10 +1,18 @@
+;;;;;;;;;;;;;
+;; require ;;
+;;;;;;;;;;;;;
+(require 'winner)
+
 ;;;;;;;;;;;;;;;
 ;; functions ;;
 ;;;;;;;;;;;;;;;
 (defun jqt/two-third-it-up ()
   "With the current buffer and full screen window, split it in two and
 make the left one eshell and 1/3 width, and the remaining 2/3 be the
-  current buffer"
+current buffer.
+
+Note that it's not really two thirds but the desired effect nonetheless.
+"
   (interactive)
   (delete-other-windows)
   (split-window-right)
@@ -58,6 +66,42 @@ If OTHER is nil, stay in current window, else..."
     (other-frame 1)
     (delete-frame)))
 
+(defun jqt/continue-cycling-buffers-in-windows ()
+  "Calls `jqt/cycle-buffers-in-windows' and sets up the temporary
+map."
+  (interactive)
+  (jqt/cycle-buffers-in-windows)
+  (jqt/continue 'jqt/cycle-buffers-in-windows))
+
+(defun jqt/cycle-buffers-in-windows ()
+  "Move current buffer to next window and so on such that current
+  window will get the previous one's buffer."
+  (interactive)
+  (walk-windows
+   (lambda (window)
+     (set-window-buffer window (other-buffer nil))))
+  (switch-to-buffer nil))
+
+(defun jqt/continue-cycling-windows (&optional counter-clockwise-p)
+  "Calls `jqt/cycle-windows' and sets up the temporary map."
+  (interactive "P")
+  (jqt/cycle-windows counter-clockwise-p)
+  (jqt/continue-more
+   '((?f jqt/cycle-windows)
+     (?b '(jqt/cycle-windows t)))))
+
+(defun jqt/cycle-windows (&optional counter-clockwise)
+  "Switch windows."
+  (interactive "P")
+  (if counter-clockwise
+      (other-window -1)
+    (other-window 1)))
+
+(defun jqt/last-buffer-in-previous-window ()
+  "Switch to last buffer in the previous window."
+  (interactive)
+  (set-window-buffer (previous-window) (other-buffer)))
+
 (defun jqt/other-frame-or-create ()
   "Switch to other frame or create."
   (interactive)
@@ -77,6 +121,7 @@ E.g. if NUM is -6, then returns -1"
 ;;;;;;;;;;;;;;
 (fset 'jqt/split-window-into-three
    (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([24 49 24 51 24 51 24 43 33554438 24 98 return 33554438 24 98 return] 0 "%d")) arg)))
+(setq winner-mode 1)
 
 ;;;;;;;;;;;
 ;; hooks ;;
@@ -88,23 +133,38 @@ E.g. if NUM is -6, then returns -1"
 ;;;;;;;;;;;;;;;;;
 ;; keybindings ;;
 ;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;
-;; custom rules:    ;;
-;; - , for windows  ;;
-;; - . for frames   ;;
-;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; custom rules:            ;;
+;; - , for windows/buffers  ;;
+;; - . for frames           ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; windows
-(global-set-key (kbd "C-, c")             'jqt/split-to-compare)
-(global-set-key (kbd "C-, k")             'jqt/kill-next-window)
-(global-set-key (kbd "C-, RET")           'jqt/toggle-window-dedication)
-(global-set-key (kbd "C-, l")             'jqt/last-buffer)
-;; frames                                 
-(global-set-key (kbd "C-. o")             'jqt/other-frame-or-create)
-(global-set-key (kbd "C-. k")             'jqt/kill-other-frame)
-;; buffers                                
-(global-set-key (kbd "C-S-b")             'previous-buffer)
-(global-set-key (kbd "C-S-f")             'next-buffer)
+(global-set-key (kbd "C-, c")   'jqt/split-to-compare)
+(global-set-key (kbd "C-, k")   'jqt/kill-next-window)
+(global-set-key (kbd "C-, RET") 'jqt/toggle-window-dedication)
+(global-set-key (kbd "C-, 2")   'jqt/two-third-it-up)
+(global-set-key (kbd "C-, 3")   'jqt/split-window-into-three)
+(global-set-key (kbd "C-x O")   (lambda () (interactive)
+                                  (other-window -1)))
+(global-set-key (kbd "C-, f")   'jqt/continue-cycling-windows)
+(global-set-key (kbd "C-, b")   (lambda () (interactive)
+                                  (jqt/continue-cycling-windows 1)))
+(global-set-key (kbd "C-, r")   'rename-buffer)
+;; frames                       
+(global-set-key (kbd "C-. o")   'jqt/other-frame-or-create)
+(global-set-key (kbd "C-. k")   'jqt/kill-other-frame)
+;; buffers
+(global-set-key (kbd "C-, s")   'jqt/continue-cycling-buffers-in-windows)
+(global-set-key (kbd "C-, l")   'jqt/last-buffer)
+(global-set-key (kbd "C-, L")   'jqt/last-buffer-in-previous-window)
+(global-set-key (kbd "C-, q")   'bury-buffer)
+;;;;;;;;;;;;;;;;;
+;; winner mode ;;
+;;;;;;;;;;;;;;;;;
+(global-set-key (kbd "C-, M-f")   'winner-redo)
+(global-set-key (kbd "C-, M-b")   'winner-undo)
 
 
 
 (provide 'my-windows-management-stuff)
+
