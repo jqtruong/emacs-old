@@ -1,3 +1,5 @@
+alias grails-test-unit-spock grails test-app -Duser.timezone=UTC unit:spock $1
+alias grails-test-unit grails test-app -Duser.timezone=UTC unit: $1
 alias ms magit-status .
 alias run-bloom cd /Users/jtruong/git/webapp_bloomhealth/bloomhealth; print-pretty-pwd; grails run-app
 alias grails-test-integration-spock grails -Duser.timezone=UTC test-app integration:spock $1
@@ -17,6 +19,4 @@ alias ll ls -l
 alias gradle-clean-build gradle clean build
 alias clean-bloomhealth cd /Users/jtruong/git/bloomhealth; gradle-clean-build
 alias grails-test-integration grails test-app -Duser.timezone=UTC integration:
-alias grails-test-unit grails test-app -Duser.timezone=UTC unit:
-alias grails-test-unit-spock grails test-app -Duser.timezone=UTC unit:spock
 alias rebuild-bloomhealth-qeux cd /Users/jtruong/git/bloomhealth; print-pretty-pwd; gradle clean build publishToMavenLocal -Psnapshot=true -Pfeature=qeux

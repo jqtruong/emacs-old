@@ -66,14 +66,14 @@ If OTHER is nil, stay in current window, else..."
     (other-frame 1)
     (delete-frame)))
 
-(defun jqt/continue-cycling-buffers-in-windows ()
-  "Calls `jqt/cycle-buffers-in-windows' and sets up the temporary
+(defun jqt/continue-rotating-buffers-in-windows ()
+  "Calls `jqt/rotate-buffers-in-windows' and sets up the temporary
 map."
   (interactive)
-  (jqt/cycle-buffers-in-windows)
-  (jqt/continue 'jqt/cycle-buffers-in-windows))
+  (jqt/rotate-buffers-in-windows)
+  (jqt/continue 'jqt/rotate-buffers-in-windows))
 
-(defun jqt/cycle-buffers-in-windows ()
+(defun jqt/rotate-buffers-in-windows ()
   "Move current buffer to next window and so on such that current
   window will get the previous one's buffer."
   (interactive)
@@ -82,16 +82,16 @@ map."
      (set-window-buffer window (other-buffer nil))))
   (switch-to-buffer nil))
 
-(defun jqt/continue-cycling-windows (&optional counter-clockwise-p)
-  "Calls `jqt/cycle-windows' and sets up the temporary map."
+(defun jqt/continue-switching-windows (&optional counter-clockwise-p)
+  "Calls `jqt/switch-windows' and sets up the temporary map."
   (interactive "P")
-  (jqt/cycle-windows counter-clockwise-p)
+  (jqt/switch-windows counter-clockwise-p)
   (jqt/continue-more
-   '((?f jqt/cycle-windows)
-     (?b '(jqt/cycle-windows t)))))
+   '((?f jqt/switch-windows)
+     (?b '(jqt/switch-windows t)))))
 
-(defun jqt/cycle-windows (&optional counter-clockwise)
-  "Switch windows."
+(defun jqt/switch-windows (&optional counter-clockwise)
+  "Convenience keybinding to switch windows."
   (interactive "P")
   (if counter-clockwise
       (other-window -1)
@@ -146,15 +146,15 @@ E.g. if NUM is -6, then returns -1"
 (global-set-key (kbd "C-, 3")   'jqt/split-window-into-three)
 (global-set-key (kbd "C-x O")   (lambda () (interactive)
                                   (other-window -1)))
-(global-set-key (kbd "C-, f")   'jqt/continue-cycling-windows)
+(global-set-key (kbd "C-, f")   'jqt/continue-switching-windows)
 (global-set-key (kbd "C-, b")   (lambda () (interactive)
-                                  (jqt/continue-cycling-windows 1)))
+                                  (jqt/continue-switching-windows 1)))
 (global-set-key (kbd "C-, r")   'rename-buffer)
 ;; frames                       
 (global-set-key (kbd "C-. o")   'jqt/other-frame-or-create)
 (global-set-key (kbd "C-. k")   'jqt/kill-other-frame)
 ;; buffers
-(global-set-key (kbd "C-, s")   'jqt/continue-cycling-buffers-in-windows)
+(global-set-key (kbd "C-, s")   'jqt/continue-rotating-buffers-in-windows)
 (global-set-key (kbd "C-, l")   'jqt/last-buffer)
 (global-set-key (kbd "C-, L")   'jqt/last-buffer-in-previous-window)
 (global-set-key (kbd "C-, q")   'bury-buffer)
